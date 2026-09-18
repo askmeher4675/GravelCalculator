@@ -185,7 +185,7 @@ export const drivewayCalculator: CalculatorConfig = {
   methodology:
     "Area is calculated from the shape you select — rectangle (length × width), circle (π × radius²), triangle (½ × base × height), circular ring (π × (outer radius² − inner radius²)) for a circular loop driveway, or trapezoid (average of the two parallel sides × length) for a driveway that tapers between the street and garage. Base and surface layer volumes are calculated separately (area × depth in feet) and then summed, since driveways are typically built with a compacted crushed-stone base topped by a finer surface layer. Both layers are converted to cubic yards (27 ft³ per yd³). Weight assumes standard crushed aggregate at approximately 2,800 lb per cubic yard. We add your selected waste percentage to cover compaction, spillage, and uneven sub-grade, then round the combined total up to the nearest full yard.",
   example:
-    "A 50 ft × 12 ft driveway with a 4 in base and 2 in surface layer needs 3.33 yd³ total. With 10% waste that's 3.67 yd³, so order 4 yd³ — about 5.6 tons.",
+    "A 50 ft × 12 ft driveway with a 4 in base and 2 in surface layer needs 11.11 yd³ total. With 10% waste that's 12.22 yd³, so order 13 yd³ — about 18.2 tons.",
   faqs: [
     {
       question: "My driveway isn't a simple rectangle — can this calculator still handle it?",

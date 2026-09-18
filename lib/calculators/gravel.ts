@@ -2,6 +2,8 @@ import { CalculatorConfig } from "./types";
 import { SHAPES, shapeAreaSqFt, shapeAreaFormulaLabel, shapeLabel } from "./shapeArea";
 
 const CUBIC_FT_PER_CUBIC_YD = 27;
+const CUBIC_FT_PER_BAG = 0.5; // standard 0.5 ft³ bagged gravel
+const LB_PER_KG = 0.45359237;
 
 // Approximate density by gravel type, in lb per cubic yard.
 const GRAVEL_TYPES = [
@@ -176,10 +178,13 @@ export const gravelCalculator: CalculatorConfig = {
     const volumeCubicFt = area * depthFt;
     const volumeCubicYd = volumeCubicFt / CUBIC_FT_PER_CUBIC_YD;
     const withWasteCubicYd = volumeCubicYd * (1 + wastePercent / 100);
+    const withWasteCubicFt = volumeCubicFt * (1 + wastePercent / 100);
     const recommendedOrderYd = Math.ceil(withWasteCubicYd);
     const estimatedTons = (recommendedOrderYd * gravel.lbPerCubicYd) / 2000;
     const totalCost = estimatedTons * pricePerTon;
     const volumeCubicM = volumeCubicYd * 0.7646;
+    const estimatedKg = (estimatedTons * 2000) * LB_PER_KG;
+    const bagsNeeded = Math.ceil(withWasteCubicFt / CUBIC_FT_PER_BAG);
 
     return {
       primaryValue: `$${totalCost.toFixed(2)}`,
@@ -188,7 +193,7 @@ export const gravelCalculator: CalculatorConfig = {
       secondary: [
         { label: "Cubic yards needed", value: `${recommendedOrderYd} yd³` },
         { label: "Estimated tons", value: `${estimatedTons.toFixed(2)} tons` },
-        { label: "Gravel type", value: gravel.label },
+        { label: `Bags (${CUBIC_FT_PER_BAG} ft³ each)`, value: `${bagsNeeded} bags` },
       ],
       breakdown: [
         { label: `${shapeAreaFormulaLabel(shape, inputs)} · ${shapeLabel(shape)}`, value: `${area.toFixed(0)} ft²` },
@@ -197,13 +202,14 @@ export const gravelCalculator: CalculatorConfig = {
         { label: `With ${wastePercent}% waste`, value: `${withWasteCubicYd.toFixed(2)} yd³` },
         { label: "Recommended order", value: `${recommendedOrderYd} yd³`, note: "Rounded up to the nearest yard" },
         { label: `Weight (${gravel.label}, ~${gravel.lbPerCubicYd} lb/yd³)`, value: `${estimatedTons.toFixed(2)} tons` },
+        { label: `Bags at ${CUBIC_FT_PER_BAG} ft³ each`, value: `${bagsNeeded} bags`, note: "Alternative for small orders instead of bulk delivery" },
         { label: `Cost (${estimatedTons.toFixed(2)} tons × $${pricePerTon.toFixed(2)}/ton)`, value: `$${totalCost.toFixed(2)}` },
       ],
-      conversion: `Volume = ${volumeCubicM.toFixed(2)} m³`,
+      conversion: `Volume = ${volumeCubicM.toFixed(2)} m³ · Weight ≈ ${estimatedKg.toFixed(0)} kg`,
     };
   },
   methodology:
-    "Area is calculated from the shape you select — rectangle (length × width), circle (π × radius²), triangle (½ × base × height), circular ring (π × (outer radius² − inner radius²)) for paths around a bed, or trapezoid (average of the two parallel sides × width) for tapered driveways. That area is multiplied by depth to get volume, converted from cubic feet to cubic yards (27 ft³ per yd³), then rounded up to the nearest full yard since most suppliers sell by the yard. Weight is estimated using the selected gravel type's typical density — crushed stone, pea gravel, limestone, river rock, and decomposed granite all pack differently, from about 2,600 to 2,800 lb per cubic yard. Total cost multiplies the estimated tons by your entered price per ton. We add your selected waste percentage to the volume to cover uneven ground, spillage, and compaction before converting to weight and cost.",
+    "Area is calculated from the shape you select — rectangle (length × width), circle (π × radius²), triangle (½ × base × height), circular ring (π × (outer radius² − inner radius²)) for paths around a bed, or trapezoid (average of the two parallel sides × width) for tapered driveways. That area is multiplied by depth to get volume, converted from cubic feet to cubic yards (27 ft³ per yd³), then rounded up to the nearest full yard since most suppliers sell by the yard. Weight is estimated using the selected gravel type's typical density — crushed stone, pea gravel, limestone, river rock, and decomposed granite all pack differently, from about 2,600 to 2,800 lb per cubic yard. Total cost multiplies the estimated tons by your entered price per ton. We add your selected waste percentage to the volume to cover uneven ground, spillage, and compaction before converting to weight and cost. For small orders, we also estimate the equivalent number of standard 0.5 ft³ bags, and show volume and weight converted to metric (m³ and kg).",
   example:
     "A 20 ft × 10 ft driveway at 4 in deep needs 2.47 yd³ of gravel. With 10% waste that's 2.72 yd³, so order 3 yd³ of crushed stone — about 3.9 tons. At $55/ton, that's roughly $214.50.",
   faqs: [
