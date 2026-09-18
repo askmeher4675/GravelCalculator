@@ -1,8 +1,9 @@
 import { CalculatorConfig } from "./types";
 import { SHAPES, shapeAreaSqFt, shapeAreaFormulaLabel, shapeLabel } from "./shapeArea";
+import { CUBIC_FT_PER_CUBIC_YD, withWaste, roundUpToIncrement } from "./volumeModel";
 
-const CUBIC_FT_PER_CUBIC_YD = 27;
 const LBS_PER_CUBIC_YD_AGGREGATE = 2800; // ~1.4 tons per yd³, standard crushed base/gravel
+const ORDER_INCREMENT_YD = 0.1; // suggested order rounds up to the nearest 0.1 yd³
 
 export const drivewayCalculator: CalculatorConfig = {
   slug: "driveway-calculator",
@@ -157,35 +158,39 @@ export const drivewayCalculator: CalculatorConfig = {
     const areaSqFt = shapeAreaSqFt(shape, inputs);
     const baseVolumeCubicFt = areaSqFt * (baseDepth / 12);
     const surfaceVolumeCubicFt = areaSqFt * (surfaceDepth / 12);
-    const totalVolumeCubicFt = baseVolumeCubicFt + surfaceVolumeCubicFt;
-    const totalVolumeCubicYd = totalVolumeCubicFt / CUBIC_FT_PER_CUBIC_YD;
-    const withWasteCubicYd = totalVolumeCubicYd * (1 + wastePercent / 100);
-    const recommendedOrder = Math.ceil(withWasteCubicYd);
-    const estimatedWeightTons = (recommendedOrder * LBS_PER_CUBIC_YD_AGGREGATE) / 2000;
+
+    // Single source of truth: raw volume -> waste-adjusted volume -> suggested order.
+    // Weight is ALWAYS derived from the waste-adjusted volume, never the rounded order.
+    const rawVolumeCubicFt = baseVolumeCubicFt + surfaceVolumeCubicFt;
+    const rawVolumeCubicYd = rawVolumeCubicFt / CUBIC_FT_PER_CUBIC_YD;
+    const wasteAdjustedCubicYd = withWaste(rawVolumeCubicYd, wastePercent);
+    const suggestedOrderYd = roundUpToIncrement(wasteAdjustedCubicYd, ORDER_INCREMENT_YD);
+    const estimatedWeightTons = (wasteAdjustedCubicYd * LBS_PER_CUBIC_YD_AGGREGATE) / 2000;
 
     return {
-      primaryValue: totalVolumeCubicYd.toFixed(2),
+      primaryValue: rawVolumeCubicYd.toFixed(2),
       primaryUnit: "yd³",
-      primaryExplanation: "Total material needed (base + surface)",
+      primaryExplanation: "Total material required (base + surface)",
       secondary: [
-        { label: `With ${wastePercent}% waste`, value: `${withWasteCubicYd.toFixed(2)} yd³` },
-        { label: "Recommended order", value: `${recommendedOrder} yd³` },
-        { label: "Estimated weight", value: `~${estimatedWeightTons.toFixed(1)} tons` },
+        { label: `With ${wastePercent}% waste`, value: `${wasteAdjustedCubicYd.toFixed(2)} yd³` },
+        { label: "Suggested order", value: `${suggestedOrderYd.toFixed(1)} yd³` },
+        { label: "Estimated weight", value: `~${estimatedWeightTons.toFixed(2)} tons` },
       ],
       breakdown: [
         { label: `${shapeAreaFormulaLabel(shape, inputs)} · ${shapeLabel(shape)}`, value: `${areaSqFt.toFixed(0)} ft²` },
         { label: `Base layer (${baseDepth.toFixed(1)} in)`, value: `${(baseVolumeCubicFt / CUBIC_FT_PER_CUBIC_YD).toFixed(2)} yd³` },
         { label: `Surface layer (${surfaceDepth.toFixed(1)} in)`, value: `${(surfaceVolumeCubicFt / CUBIC_FT_PER_CUBIC_YD).toFixed(2)} yd³` },
-        { label: "Total volume", value: `${totalVolumeCubicYd.toFixed(2)} yd³` },
-        { label: `With ${wastePercent}% waste`, value: `${withWasteCubicYd.toFixed(2)} yd³` },
-        { label: "Recommended order", value: `${recommendedOrder} yd³`, note: "Rounded up to the nearest yard, base and surface combined" },
+        { label: "Required (base + surface)", value: `${rawVolumeCubicYd.toFixed(2)} yd³` },
+        { label: `With ${wastePercent}% waste`, value: `${wasteAdjustedCubicYd.toFixed(2)} yd³` },
+        { label: `Weight (~${LBS_PER_CUBIC_YD_AGGREGATE} lb/yd³, incl. waste)`, value: `${estimatedWeightTons.toFixed(2)} tons` },
+        { label: "Suggested order", value: `${suggestedOrderYd.toFixed(1)} yd³`, note: `Rounded up to the nearest ${ORDER_INCREMENT_YD} yd³, base and surface combined` },
       ],
     };
   },
   methodology:
-    "Area is calculated from the shape you select — rectangle (length × width), circle (π × radius²), triangle (½ × base × height), circular ring (π × (outer radius² − inner radius²)) for a circular loop driveway, or trapezoid (average of the two parallel sides × length) for a driveway that tapers between the street and garage. Base and surface layer volumes are calculated separately (area × depth in feet) and then summed, since driveways are typically built with a compacted crushed-stone base topped by a finer surface layer. Both layers are converted to cubic yards (27 ft³ per yd³). Weight assumes standard crushed aggregate at approximately 2,800 lb per cubic yard. We add your selected waste percentage to cover compaction, spillage, and uneven sub-grade, then round the combined total up to the nearest full yard.",
+    "Area is calculated from the shape you select — rectangle (length × width), circle (π × radius²), triangle (½ × base × height), circular ring (π × (outer radius² − inner radius²)) for a circular loop driveway, or trapezoid (average of the two parallel sides × length) for a driveway that tapers between the street and garage. Base and surface layer volumes are calculated separately (area × depth in feet) and then summed to get the exact volume required, since driveways are typically built with a compacted crushed-stone base topped by a finer surface layer. That required volume is converted to cubic yards (27 ft³ per yd³), then your selected waste percentage is added to cover compaction, spillage, and uneven sub-grade. Weight and the suggested order are both calculated from that same waste-adjusted volume — weight assumes standard crushed aggregate at approximately 2,800 lb per cubic yard, and the suggested order rounds up to the nearest 0.1 yd³.",
   example:
-    "A 50 ft × 12 ft driveway with a 4 in base and 2 in surface layer needs 11.11 yd³ total. With 10% waste that's 12.22 yd³, so order 13 yd³ — about 18.2 tons.",
+    "A 50 ft × 12 ft driveway with a 4 in base and 2 in surface layer needs 11.11 yd³ total. With 10% waste that's 12.22 yd³ — about 17.11 tons — so suggested order is 12.3 yd³.",
   faqs: [
     {
       question: "My driveway isn't a simple rectangle — can this calculator still handle it?",

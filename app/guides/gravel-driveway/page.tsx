@@ -43,8 +43,8 @@ export default function GravelDrivewayGuidePage() {
               <p className="mt-3 text-[16px] text-text-secondary">
                 Multiply the driveway&apos;s length by its width to get the area, then multiply by the depth
                 (converted to feet) to get volume. A 50 ft × 12 ft driveway at 6 in deep needs about 11.1 yd³
-                of gravel before waste. Add 10% for compaction and uneven sub-grade, and round up to the
-                nearest full yard since most suppliers sell gravel by the yard.
+                of gravel before waste. Add 10% for compaction and uneven sub-grade to get the waste-adjusted
+                volume (about 12.2 yd³), then round that up to the nearest 0.1 yd³ for your supplier order.
               </p>
               <div className="mt-4">
                 <InfoCallout>

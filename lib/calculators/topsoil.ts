@@ -1,8 +1,9 @@
 import { CalculatorConfig } from "./types";
 import { SHAPES, shapeAreaSqFt, shapeAreaFormulaLabel, shapeLabel } from "./shapeArea";
+import { rawVolume, withWaste, roundUpToIncrement } from "./volumeModel";
 
-const CUBIC_FT_PER_CUBIC_YD = 27;
 const LBS_PER_CUBIC_YD_TOPSOIL = 2200; // ~81 lb/ft³, typical for moist screened topsoil
+const ORDER_INCREMENT_YD = 0.1; // suggested order rounds up to the nearest 0.1 yd³
 
 export const topsoilCalculator: CalculatorConfig = {
   slug: "topsoil-calculator",
@@ -146,37 +147,39 @@ export const topsoilCalculator: CalculatorConfig = {
     const { shape, depth } = inputs;
     const areaSqFt = shapeAreaSqFt(shape, inputs);
     const depthFt = depth / 12;
-    const volumeCubicFt = areaSqFt * depthFt;
-    const volumeCubicYd = volumeCubicFt / CUBIC_FT_PER_CUBIC_YD;
-    const withWasteCubicYd = volumeCubicYd * (1 + wastePercent / 100);
-    const recommendedOrder = Math.ceil(withWasteCubicYd);
-    const estimatedWeightTons = (withWasteCubicYd * LBS_PER_CUBIC_YD_TOPSOIL) / 2000;
-    const volumeCubicM = volumeCubicYd * 0.7646;
+
+    // Single source of truth: raw volume -> waste-adjusted volume -> suggested order.
+    // Weight is ALWAYS derived from the waste-adjusted volume.
+    const { cubicFt: rawVolumeCubicFt, cubicYd: rawVolumeCubicYd } = rawVolume(areaSqFt, depthFt);
+    const wasteAdjustedCubicYd = withWaste(rawVolumeCubicYd, wastePercent);
+    const suggestedOrderYd = roundUpToIncrement(wasteAdjustedCubicYd, ORDER_INCREMENT_YD);
+    const estimatedWeightTons = (wasteAdjustedCubicYd * LBS_PER_CUBIC_YD_TOPSOIL) / 2000;
+    const rawVolumeCubicM = rawVolumeCubicYd * 0.7646;
 
     return {
-      primaryValue: volumeCubicYd.toFixed(2),
+      primaryValue: rawVolumeCubicYd.toFixed(2),
       primaryUnit: "yd³",
-      primaryExplanation: "Estimated topsoil volume needed",
+      primaryExplanation: "Estimated topsoil volume required",
       secondary: [
-        { label: `With ${wastePercent}% waste`, value: `${withWasteCubicYd.toFixed(2)} yd³` },
-        { label: "Recommended order", value: `${recommendedOrder} yd³` },
+        { label: `With ${wastePercent}% waste`, value: `${wasteAdjustedCubicYd.toFixed(2)} yd³` },
+        { label: "Suggested order", value: `${suggestedOrderYd.toFixed(1)} yd³` },
         { label: "Estimated weight", value: `~${estimatedWeightTons.toFixed(2)} tons` },
       ],
       breakdown: [
         { label: `${shapeAreaFormulaLabel(shape, inputs)} · ${shapeLabel(shape)}`, value: `${areaSqFt.toFixed(0)} ft²` },
-        { label: `Volume (${areaSqFt.toFixed(0)} × ${depthFt.toFixed(2)} ft)`, value: `${volumeCubicFt.toFixed(1)} ft³` },
-        { label: "Converted to yd³", value: `${volumeCubicYd.toFixed(2)} yd³` },
-        { label: `With ${wastePercent}% waste`, value: `${withWasteCubicYd.toFixed(2)} yd³` },
-        { label: `Weight (~${LBS_PER_CUBIC_YD_TOPSOIL} lb/yd³)`, value: `${estimatedWeightTons.toFixed(2)} tons` },
-        { label: "Recommended order", value: `${recommendedOrder} yd³`, note: "Rounded up to the nearest yard" },
+        { label: `Volume (${areaSqFt.toFixed(0)} × ${depthFt.toFixed(2)} ft)`, value: `${rawVolumeCubicFt.toFixed(1)} ft³` },
+        { label: "Required (converted to yd³)", value: `${rawVolumeCubicYd.toFixed(2)} yd³` },
+        { label: `With ${wastePercent}% waste`, value: `${wasteAdjustedCubicYd.toFixed(2)} yd³` },
+        { label: `Weight (~${LBS_PER_CUBIC_YD_TOPSOIL} lb/yd³, incl. waste)`, value: `${estimatedWeightTons.toFixed(2)} tons` },
+        { label: "Suggested order", value: `${suggestedOrderYd.toFixed(1)} yd³`, note: `Rounded up to the nearest ${ORDER_INCREMENT_YD} yd³` },
       ],
-      conversion: `= ${volumeCubicM.toFixed(2)} m³`,
+      conversion: `= ${rawVolumeCubicM.toFixed(2)} m³`,
     };
   },
   methodology:
-    "Area is calculated from the shape you select — rectangle (length × width), circle (π × radius²), triangle (½ × base × height), circular ring (π × (outer radius² − inner radius²)), or trapezoid (average of the two parallel sides × width). That area is multiplied by depth to get volume, converted from cubic feet to cubic yards (27 ft³ per yd³). Weight assumes moist, screened topsoil at approximately 2,200 lb per cubic yard — actual density varies with moisture content and soil composition — and is calculated from the volume including waste, before rounding up to a full order yard. We add your selected waste percentage to cover settling and uneven grading, then round the volume up to the nearest full yard since most suppliers sell topsoil by the yard.",
+    "Area is calculated from the shape you select — rectangle (length × width), circle (π × radius²), triangle (½ × base × height), circular ring (π × (outer radius² − inner radius²)), or trapezoid (average of the two parallel sides × width). That area is multiplied by depth to get the exact volume required, converted from cubic feet to cubic yards (27 ft³ per yd³). Your selected waste percentage is added to cover settling and uneven grading, and weight is calculated from that same waste-adjusted volume — approximately 2,200 lb per cubic yard for moist, screened topsoil (actual density varies with moisture content and soil composition). The suggested order then rounds the waste-adjusted volume up to the nearest 0.1 yd³ since most suppliers sell topsoil by the yard.",
   example:
-    "A 12 ft × 6 ft raised bed area at 6 in deep needs 1.33 yd³ of topsoil. With 10% waste that's 1.47 yd³ — about 1.61 tons — so order 2 yd³ to cover it.",
+    "A 12 ft × 6 ft raised bed area at 6 in deep needs 1.33 yd³ of topsoil. With 10% waste that's 1.47 yd³ — about 1.61 tons — so suggested order is 1.5 yd³.",
   faqs: [
     {
       question: "My bed isn't a rectangle — can this calculator still handle it?",

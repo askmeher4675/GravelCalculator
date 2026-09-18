@@ -1,9 +1,10 @@
 import { CalculatorConfig } from "./types";
 import { SHAPES, shapeAreaSqFt, shapeAreaFormulaLabel, shapeLabel } from "./shapeArea";
+import { rawVolume, withWaste, roundUpToIncrement } from "./volumeModel";
 
-const CUBIC_FT_PER_CUBIC_YD = 27;
 const LBS_PER_CUBIC_YD_MULCH = 500; // ~18.5 lb/ft³, typical for shredded bark mulch
 const CUBIC_FT_PER_BAG = 2; // standard 2 cu ft mulch bag
+const ORDER_INCREMENT_YD = 0.1; // suggested order rounds up to the nearest 0.1 yd³
 
 export const mulchCalculator: CalculatorConfig = {
   slug: "mulch-calculator",
@@ -147,38 +148,42 @@ export const mulchCalculator: CalculatorConfig = {
     const { shape, depth } = inputs;
     const areaSqFt = shapeAreaSqFt(shape, inputs);
     const depthFt = depth / 12;
-    const volumeCubicFt = areaSqFt * depthFt;
-    const volumeCubicYd = volumeCubicFt / CUBIC_FT_PER_CUBIC_YD;
-    const withWasteCubicYd = volumeCubicYd * (1 + wastePercent / 100);
-    const recommendedOrder = Math.ceil(withWasteCubicYd);
-    const bagsNeeded = Math.ceil((volumeCubicFt * (1 + wastePercent / 100)) / CUBIC_FT_PER_BAG);
-    const estimatedWeightLbs = withWasteCubicYd * LBS_PER_CUBIC_YD_MULCH;
-    const volumeCubicM = volumeCubicYd * 0.7646;
+
+    // Single source of truth: raw volume -> waste-adjusted volume -> suggested order.
+    // Weight and bags are BOTH derived from the waste-adjusted volume.
+    const { cubicFt: rawVolumeCubicFt, cubicYd: rawVolumeCubicYd } = rawVolume(areaSqFt, depthFt);
+    const wasteAdjustedCubicYd = withWaste(rawVolumeCubicYd, wastePercent);
+    const wasteAdjustedCubicFt = withWaste(rawVolumeCubicFt, wastePercent);
+    const suggestedOrderYd = roundUpToIncrement(wasteAdjustedCubicYd, ORDER_INCREMENT_YD);
+    const bagsNeeded = Math.ceil(wasteAdjustedCubicFt / CUBIC_FT_PER_BAG);
+    const estimatedWeightLbs = wasteAdjustedCubicYd * LBS_PER_CUBIC_YD_MULCH;
+    const rawVolumeCubicM = rawVolumeCubicYd * 0.7646;
 
     return {
-      primaryValue: volumeCubicYd.toFixed(2),
+      primaryValue: rawVolumeCubicYd.toFixed(2),
       primaryUnit: "yd³",
-      primaryExplanation: "Estimated mulch volume needed",
+      primaryExplanation: "Estimated mulch volume required",
       secondary: [
-        { label: `With ${wastePercent}% waste`, value: `${withWasteCubicYd.toFixed(2)} yd³` },
-        { label: "Recommended order (bulk)", value: `${recommendedOrder} yd³` },
+        { label: `With ${wastePercent}% waste`, value: `${wasteAdjustedCubicYd.toFixed(2)} yd³` },
+        { label: "Suggested order (bulk)", value: `${suggestedOrderYd.toFixed(1)} yd³` },
         { label: "2 ft³ bags (alternative)", value: `${bagsNeeded} bags` },
       ],
       breakdown: [
         { label: `${shapeAreaFormulaLabel(shape, inputs)} · ${shapeLabel(shape)}`, value: `${areaSqFt.toFixed(0)} ft²` },
-        { label: `Volume (${areaSqFt.toFixed(0)} × ${depthFt.toFixed(2)} ft)`, value: `${volumeCubicFt.toFixed(1)} ft³` },
-        { label: "Converted to yd³", value: `${volumeCubicYd.toFixed(2)} yd³` },
-        { label: `With ${wastePercent}% waste`, value: `${withWasteCubicYd.toFixed(2)} yd³` },
-        { label: "Recommended order", value: `${recommendedOrder} yd³`, note: "Rounded up to the nearest yard for bulk delivery" },
-        { label: "Estimated weight", value: `~${estimatedWeightLbs.toFixed(0)} lb` },
+        { label: `Volume (${areaSqFt.toFixed(0)} × ${depthFt.toFixed(2)} ft)`, value: `${rawVolumeCubicFt.toFixed(1)} ft³` },
+        { label: "Required (converted to yd³)", value: `${rawVolumeCubicYd.toFixed(2)} yd³` },
+        { label: `With ${wastePercent}% waste`, value: `${wasteAdjustedCubicYd.toFixed(2)} yd³` },
+        { label: "Weight (~500 lb/yd³, incl. waste)", value: `~${estimatedWeightLbs.toFixed(0)} lb` },
+        { label: "Bags at 2 ft³ each (incl. waste)", value: `${bagsNeeded} bags` },
+        { label: "Suggested order", value: `${suggestedOrderYd.toFixed(1)} yd³`, note: `Rounded up to the nearest ${ORDER_INCREMENT_YD} yd³ for bulk delivery` },
       ],
-      conversion: `= ${volumeCubicM.toFixed(2)} m³`,
+      conversion: `= ${rawVolumeCubicM.toFixed(2)} m³`,
     };
   },
   methodology:
-    "Area is calculated from the shape you select — rectangle (length × width), circle (π × radius²), triangle (½ × base × height), circular ring (π × (outer radius² − inner radius²)) for a mulch ring around a tree, or trapezoid (average of the two parallel sides × width). That area is multiplied by depth to get volume, converted from cubic feet to cubic yards (27 ft³ per yd³). Weight assumes standard shredded bark mulch at approximately 500 lb per cubic yard — actual density varies with moisture and mulch type. The bag estimate assumes standard 2 cubic foot bags. We add your selected waste percentage to cover settling, uneven ground, and spillage, then round up to the nearest full yard for bulk orders.",
+    "Area is calculated from the shape you select — rectangle (length × width), circle (π × radius²), triangle (½ × base × height), circular ring (π × (outer radius² − inner radius²)) for a mulch ring around a tree, or trapezoid (average of the two parallel sides × width). That area is multiplied by depth to get the exact volume required, converted from cubic feet to cubic yards (27 ft³ per yd³). Your selected waste percentage is added to cover settling, uneven ground, and spillage, and weight and bag count are both calculated from that same waste-adjusted volume — weight assumes standard shredded bark mulch at approximately 500 lb per cubic yard (actual density varies with moisture and mulch type), and the bag estimate assumes standard 2 cubic foot bags. The suggested order then rounds that waste-adjusted volume up to the nearest 0.1 yd³ for bulk delivery.",
   example:
-    "A 15 ft × 8 ft garden bed at 3 in deep needs 1.11 yd³ of mulch. With 10% waste that's 1.22 yd³, so order 2 yd³ in bulk — or about 17 bags of 2 ft³ mulch.",
+    "A 15 ft × 8 ft garden bed at 3 in deep needs 1.11 yd³ of mulch. With 10% waste that's 1.22 yd³ — about 611 lb, or 17 bags of 2 ft³ mulch — so suggested order is 1.3 yd³ in bulk.",
   faqs: [
     {
       question: "My bed isn't a rectangle — can this calculator still handle it?",
