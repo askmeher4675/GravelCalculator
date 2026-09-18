@@ -1,26 +1,207 @@
 @import "tailwindcss";
 
+/* =========================================================
+   DESIGN TOKENS — three-layer system: primitive → semantic → component
+   Source of truth: docs/design-system (Home Improvement Calculators)
+   ========================================================= */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* ---- Primitive: color ---- */
+  --p-teal-900: #0b3d3a;
+  --p-teal-700: #0f6b60;
+  --p-teal-600: #14947f;
+  --p-teal-400: #4fc4ab;
+  --p-coral-600: #e2703a;
+  --p-coral-500: #f0895a;
+  --p-neutral-0: #ffffff;
+  --p-neutral-50: #fbf8f3;
+  --p-neutral-200: #e8e1d5;
+  --p-neutral-300: #d8cfbe;
+  --p-neutral-500: #8a8477;
+  --p-neutral-700: #4a463d;
+  --p-neutral-900: #201d18;
+  --p-amber-600: #c98a1f;
+  --p-red-600: #c2452e;
+  --p-blue-700: #2f6f9e;
+
+  /* ---- Semantic: color ---- */
+  --color-primary: var(--p-teal-700);
+  --color-primary-dark: var(--p-teal-900);
+  --color-secondary: var(--p-coral-600);
+  --color-bg: var(--p-neutral-50);
+  --color-surface: var(--p-neutral-0);
+  --color-surface-elevated: var(--p-neutral-0);
+  --color-text-primary: var(--p-neutral-900);
+  --color-text-secondary: var(--p-neutral-700);
+  --color-text-muted: var(--p-neutral-500);
+  --color-border: var(--p-neutral-200);
+  --color-border-strong: var(--p-neutral-300);
+  --color-success: var(--p-teal-600);
+  --color-warning: var(--p-amber-600);
+  --color-error: var(--p-red-600);
+  --color-info: var(--p-blue-700);
+  --color-on-primary: var(--p-neutral-0);
+  --gradient-hero: linear-gradient(135deg, var(--p-teal-700) 0%, var(--p-teal-600) 45%, var(--p-coral-500) 130%);
+
+  /* ---- Primitive: spacing (4px base) ---- */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+
+  /* ---- Layout ---- */
+  --container-width: 1120px;
+  --content-width: 680px;
+  --sidebar-width: 320px;
+
+  /* ---- Radius ---- */
+  --radius-sm: 8px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+
+  /* ---- Shadow (restrained) ---- */
+  --shadow-sm: 0 1px 2px 0 rgb(32 29 24 / 0.06);
+  --shadow-md: 0 4px 16px -4px rgb(32 29 24 / 0.12);
+  --shadow-lg: 0 12px 32px -8px rgb(32 29 24 / 0.18);
+  --shadow-primary: 0 8px 20px -6px rgb(15 107 96 / 0.35);
+
+  /* ---- Border ---- */
+  --border-default: 1px solid var(--color-border);
+  --border-strong: 1px solid var(--color-border-strong);
+
+  /* ---- Typography ---- */
+  --font-family-sans: var(--font-inter), -apple-system, "Segoe UI", sans-serif;
+  --font-family-mono: var(--font-plex-mono), "SF Mono", monospace;
+
+  --text-h1-size: 28px;
+  --text-h1-lh: 1.2;
+  --text-h2-size: 24px;
+  --text-h2-lh: 1.25;
+  --text-h3-size: 20px;
+  --text-h3-lh: 1.3;
+  --text-h4-size: 17px;
+  --text-h4-lh: 1.4;
+  --text-body-size: 16px;
+  --text-body-lh: 1.6;
+  --text-small-size: 14px;
+  --text-small-lh: 1.5;
+  --text-label-size: 13px;
+  --text-label-lh: 1.3;
+  --text-nav-size: 15px;
+  --text-nav-lh: 1.4;
+  --text-button-size: 15px;
+  --text-button-lh: 1.2;
+  --text-result-primary-size: 48px;
+  --text-result-primary-lh: 1.1;
+  --text-result-secondary-size: 20px;
+  --text-result-secondary-lh: 1.3;
+  --text-result-unit-size: 18px;
+  --text-result-unit-lh: 1;
+
+  /* ---- Motion ---- */
+  --transition-fast: 120ms ease;
+  --transition-base: 150ms ease;
+
+  /* ---- Breakpoints (reference only — Tailwind handles media queries) ---- */
+  --bp-sm: 480px;
+  --bp-md: 768px;
+  --bp-lg: 1024px;
+  --bp-xl: 1280px;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
+@media (min-width: 768px) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --text-h1-size: 32px;
+    --text-h1-lh: 1.2;
+    --text-result-primary-size: 56px;
   }
 }
 
+/* ---- Tailwind v4 theme mapping: semantic tokens → utility classes ---- */
+@theme inline {
+  --color-primary: var(--color-primary);
+  --color-primary-dark: var(--color-primary-dark);
+  --color-secondary: var(--color-secondary);
+  --color-bg: var(--color-bg);
+  --color-surface: var(--color-surface);
+  --color-surface-elevated: var(--color-surface-elevated);
+  --color-text-primary: var(--color-text-primary);
+  --color-text-secondary: var(--color-text-secondary);
+  --color-text-muted: var(--color-text-muted);
+  --color-border: var(--color-border);
+  --color-border-strong: var(--color-border-strong);
+  --color-success: var(--color-success);
+  --color-warning: var(--color-warning);
+  --color-error: var(--color-error);
+  --color-info: var(--color-info);
+  --color-on-primary: var(--color-on-primary);
+
+  --font-sans: var(--font-family-sans);
+  --font-mono: var(--font-family-mono);
+
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+
+  --shadow-token-sm: var(--shadow-sm);
+  --shadow-token-md: var(--shadow-md);
+  --shadow-token-lg: var(--shadow-lg);
+  --shadow-token-primary: var(--shadow-primary);
+
+  --spacing-1: var(--space-1);
+  --spacing-2: var(--space-2);
+  --spacing-3: var(--space-3);
+  --spacing-4: var(--space-4);
+  --spacing-5: var(--space-5);
+  --spacing-6: var(--space-6);
+  --spacing-8: var(--space-8);
+  --spacing-10: var(--space-10);
+  --spacing-12: var(--space-12);
+  --spacing-16: var(--space-16);
+  --spacing-20: var(--space-20);
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-bg);
+  color: var(--color-text-primary);
+  font-family: var(--font-family-sans);
+  font-size: var(--text-body-size);
+  line-height: var(--text-body-lh);
+}
+
+h1 {
+  font-size: var(--text-h1-size);
+  line-height: var(--text-h1-lh);
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+h2 {
+  font-size: var(--text-h2-size);
+  line-height: var(--text-h2-lh);
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+h3 {
+  font-size: var(--text-h3-size);
+  line-height: var(--text-h3-lh);
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+h4 {
+  font-size: var(--text-h4-size);
+  line-height: var(--text-h4-lh);
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
 }

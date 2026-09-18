@@ -1,69 +1,125 @@
-import Image from "next/image";
+import Link from "next/link";
+import { Header } from "@/components/layout/Header";
+import { Footer } from "@/components/layout/Footer";
+import { PageContainer } from "@/components/layout/PageContainer";
+import { GuideCard } from "@/components/content/GuideCard";
+
+const POPULAR = [
+  { title: "Gravel Calculator", slug: "gravel-calculator" },
+  { title: "Concrete Calculator", slug: "concrete-calculator" },
+  { title: "Mulch Calculator", slug: "mulch-calculator" },
+  { title: "Topsoil Calculator", slug: "topsoil-calculator" },
+];
+
+const CATEGORIES = [
+  "Landscaping",
+  "Concrete & Masonry",
+  "Lawn & Garden",
+  "Fencing",
+  "Painting",
+  "Decks & Outdoor Projects",
+];
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <>
+      <Header />
+      <main className="flex-1">
+        <div
+          className="py-12 md:py-16"
+          style={{ background: "var(--gradient-hero)" }}
+        >
+          <PageContainer>
+            <div className="mx-auto max-w-[680px] text-center">
+              <h1 style={{ color: "var(--color-on-primary)" }}>Home Project Calculators</h1>
+              <p
+                className="mt-3 text-[16px]"
+                style={{ color: "color-mix(in srgb, var(--color-on-primary) 85%, transparent)" }}
+              >
+                Calculate the materials and quantities you need for your next home improvement project.
+              </p>
+              <div className="mt-6">
+                <input
+                  type="search"
+                  placeholder="Search calculators (e.g. gravel, concrete, fence)"
+                  className="h-12 w-full rounded-lg border-0 bg-surface px-4 text-[16px] text-text-primary shadow-[var(--shadow-lg)] outline-none focus-visible:ring-2 focus-visible:ring-secondary"
+                />
+              </div>
+            </div>
+          </PageContainer>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+        <PageContainer>
+          <section className="mt-12 md:mt-16">
+            <h2>Popular calculators</h2>
+            <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4">
+              {POPULAR.map((c) => (
+                <Link
+                  key={c.slug}
+                  href={`/calculators/${c.slug}`}
+                  className="rounded-lg border border-border bg-surface p-5 text-[16px] font-semibold text-text-primary shadow-[var(--shadow-sm)] transition-all duration-200 hover:-translate-y-0.5 hover:border-primary hover:text-primary hover:shadow-[var(--shadow-md)] motion-reduce:transition-none motion-reduce:hover:translate-y-0"
+                >
+                  {c.title}
+                </Link>
+              ))}
+            </div>
+          </section>
+
+          <section className="mt-16">
+            <h2>Calculator categories</h2>
+            <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
+              {CATEGORIES.map((cat) => (
+                <Link
+                  key={cat}
+                  href="/calculators"
+                  className="rounded-lg border border-border bg-surface p-5 text-[16px] font-medium text-text-secondary shadow-[var(--shadow-sm)] transition-all duration-200 hover:-translate-y-0.5 hover:border-primary hover:text-primary hover:shadow-[var(--shadow-md)] motion-reduce:transition-none motion-reduce:hover:translate-y-0"
+                >
+                  {cat}
+                </Link>
+              ))}
+            </div>
+          </section>
+
+          <section className="mt-16 mx-auto max-w-[680px]">
+            <h2>How our calculators work</h2>
+            <ol className="mt-4 space-y-4">
+              <li className="flex gap-4">
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary font-mono text-[15px] font-bold text-on-primary">1</span>
+                <p className="text-[16px] text-text-secondary">Enter your measurements in feet, inches, or yards — whatever fits the project.</p>
+              </li>
+              <li className="flex gap-4">
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary font-mono text-[15px] font-bold text-on-primary">2</span>
+                <p className="text-[16px] text-text-secondary">Get an instant result with the material quantity you need.</p>
+              </li>
+              <li className="flex gap-4">
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary font-mono text-[15px] font-bold text-on-primary">3</span>
+                <p className="text-[16px] text-text-secondary">See the full breakdown of the math, so the number is never a black box.</p>
+              </li>
+            </ol>
+          </section>
+
+          <section className="mt-16">
+            <h2>Helpful guides</h2>
+            <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
+              <GuideCard
+                title="How much gravel for a driveway"
+                description="A quick reference for depth and coverage by driveway size."
+                href="/guides/gravel-driveway"
+              />
+              <GuideCard
+                title="Concrete slab thickness guide"
+                description="Choosing the right thickness for patios, walkways, and driveways."
+                href="/guides/concrete-slab-thickness"
+              />
+              <GuideCard
+                title="Mulch depth by plant type"
+                description="How much mulch depth different garden beds actually need."
+                href="/guides/mulch-depth"
+              />
+            </div>
+          </section>
+        </PageContainer>
       </main>
-    </div>
+      <Footer />
+    </>
   );
 }
