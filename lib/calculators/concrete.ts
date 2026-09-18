@@ -1,4 +1,5 @@
 import { CalculatorConfig } from "./types";
+import { SHAPES, shapeAreaSqFt, shapeAreaFormulaLabel, shapeLabel } from "./shapeArea";
 
 const CUBIC_FT_PER_CUBIC_YD = 27;
 const LBS_PER_CUBIC_YD_CONCRETE = 4050; // ~150 lb/ft³ for standard concrete
@@ -13,8 +14,121 @@ export const concreteCalculator: CalculatorConfig = {
   metaDescription:
     "Concrete calculator for slabs, footings, and walkways. Enter length, width, and thickness to get cubic yards of ready-mix concrete or the number of 80 lb bags needed.",
   fields: [
-    { key: "length", label: "Length", unit: "ft", type: "number", placeholder: "10", min: 0, step: 0.5 },
-    { key: "width", label: "Width", unit: "ft", type: "number", placeholder: "10", min: 0, step: 0.5 },
+    {
+      key: "shape",
+      label: "Slab shape",
+      unit: "",
+      type: "select",
+      helperText: "Pick the shape that best matches your slab, footing, or walkway.",
+      options: SHAPES.map((s) => ({ value: s.id, label: s.label })),
+    },
+    {
+      key: "length",
+      label: "Length",
+      unit: "ft",
+      type: "number",
+      placeholder: "10",
+      min: 0,
+      step: 0.5,
+      visibleIf: { field: "shape", equals: 1 },
+    },
+    {
+      key: "width",
+      label: "Width",
+      unit: "ft",
+      type: "number",
+      placeholder: "10",
+      min: 0,
+      step: 0.5,
+      visibleIf: { field: "shape", equals: 1 },
+    },
+    {
+      key: "diameter",
+      label: "Diameter",
+      unit: "ft",
+      type: "number",
+      placeholder: "10",
+      min: 0,
+      step: 0.5,
+      helperText: "Measure straight across the widest point, e.g. a round pad or pool deck.",
+      visibleIf: { field: "shape", equals: 2 },
+    },
+    {
+      key: "base",
+      label: "Base",
+      unit: "ft",
+      type: "number",
+      placeholder: "12",
+      min: 0,
+      step: 0.5,
+      visibleIf: { field: "shape", equals: 3 },
+    },
+    {
+      key: "triangleHeight",
+      label: "Height",
+      unit: "ft",
+      type: "number",
+      placeholder: "8",
+      min: 0,
+      step: 0.5,
+      helperText: "Perpendicular distance from the base to the opposite point.",
+      visibleIf: { field: "shape", equals: 3 },
+    },
+    {
+      key: "outerDiameter",
+      label: "Outer diameter",
+      unit: "ft",
+      type: "number",
+      placeholder: "14",
+      min: 0,
+      step: 0.5,
+      helperText: "Measure across the outside edge, e.g. a circular walkway around a fire pit.",
+      visibleIf: { field: "shape", equals: 4 },
+    },
+    {
+      key: "innerDiameter",
+      label: "Inner diameter",
+      unit: "ft",
+      type: "number",
+      placeholder: "8",
+      min: 0,
+      step: 0.5,
+      helperText: "Measure across the inside edge, e.g. the fire pit or planting bed it circles.",
+      visibleIf: { field: "shape", equals: 4 },
+    },
+    {
+      key: "lengthA",
+      label: "Side A",
+      unit: "ft",
+      type: "number",
+      placeholder: "14",
+      min: 0,
+      step: 0.5,
+      helperText: "The longer parallel side.",
+      visibleIf: { field: "shape", equals: 5 },
+    },
+    {
+      key: "lengthB",
+      label: "Side B",
+      unit: "ft",
+      type: "number",
+      placeholder: "8",
+      min: 0,
+      step: 0.5,
+      helperText: "The shorter parallel side.",
+      visibleIf: { field: "shape", equals: 5 },
+    },
+    {
+      key: "trapWidth",
+      label: "Width",
+      unit: "ft",
+      type: "number",
+      placeholder: "10",
+      min: 0,
+      step: 0.5,
+      helperText: "Distance between side A and side B.",
+      visibleIf: { field: "shape", equals: 5 },
+    },
     {
       key: "thickness",
       label: "Thickness",
@@ -30,8 +144,8 @@ export const concreteCalculator: CalculatorConfig = {
   wastePercentDefault: 10,
   wasteHelperText: "Covers spillage, uneven forms, and over-excavation. 10% works for most slabs.",
   calculate: (inputs, wastePercent) => {
-    const { length, width, thickness } = inputs;
-    const areaSqFt = length * width;
+    const { shape, thickness } = inputs;
+    const areaSqFt = shapeAreaSqFt(shape, inputs);
     const thicknessFt = thickness / 12;
     const volumeCubicFt = areaSqFt * thicknessFt;
     const volumeCubicYd = volumeCubicFt / CUBIC_FT_PER_CUBIC_YD;
@@ -51,7 +165,7 @@ export const concreteCalculator: CalculatorConfig = {
         { label: "80 lb bags (alternative)", value: `${bagsNeeded} bags` },
       ],
       breakdown: [
-        { label: "Area", value: `${areaSqFt.toFixed(0)} ft²` },
+        { label: `${shapeAreaFormulaLabel(shape, inputs)} · ${shapeLabel(shape)}`, value: `${areaSqFt.toFixed(0)} ft²` },
         { label: `Volume (${areaSqFt.toFixed(0)} × ${thicknessFt.toFixed(2)} ft)`, value: `${volumeCubicFt.toFixed(1)} ft³` },
         { label: "Converted to yd³", value: `${volumeCubicYd.toFixed(2)} yd³` },
         { label: `With ${wastePercent}% waste`, value: `${withWasteCubicYd.toFixed(2)} yd³` },
@@ -62,10 +176,15 @@ export const concreteCalculator: CalculatorConfig = {
     };
   },
   methodology:
-    "Volume is calculated as length × width × thickness, converted from cubic feet to cubic yards (27 ft³ per yd³). Ready-mix trucks are typically ordered in quarter-yard increments, so the recommended order is rounded up accordingly. The bag estimate assumes standard 80 lb bags of concrete mix, each yielding about 0.6 ft³ once mixed. Weight assumes standard concrete at approximately 150 lb per cubic foot. We add your selected waste percentage to cover spillage, uneven forms, and over-excavation.",
+    "Area is calculated from the shape you select — rectangle (length × width), circle (π × radius²), triangle (½ × base × height), circular ring (π × (outer radius² − inner radius²)), or trapezoid (average of the two parallel sides × width). That area is multiplied by thickness to get volume, converted from cubic feet to cubic yards (27 ft³ per yd³). Ready-mix trucks are typically ordered in quarter-yard increments, so the recommended order is rounded up accordingly. The bag estimate assumes standard 80 lb bags of concrete mix, each yielding about 0.6 ft³ once mixed. Weight assumes standard concrete at approximately 150 lb per cubic foot. We add your selected waste percentage to cover spillage, uneven forms, and over-excavation.",
   example:
     "A 10 ft × 10 ft slab at 4 in thick needs 1.23 yd³ of concrete. With 10% waste that's 1.36 yd³, so order 1.5 yd³ from a ready-mix truck — or about 62 bags of 80 lb mix.",
   faqs: [
+    {
+      question: "My slab isn't a rectangle — can this calculator still handle it?",
+      answer:
+        "Yes. Use the \"Slab shape\" dropdown to switch to circle, triangle, circular ring, or trapezoid. Each shape shows the measurements it needs and the area formula used is shown in the breakdown.",
+    },
     {
       question: "How thick should a concrete slab be?",
       answer:

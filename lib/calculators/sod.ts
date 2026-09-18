@@ -1,4 +1,5 @@
 import { CalculatorConfig } from "./types";
+import { SHAPES, shapeAreaSqFt, shapeAreaFormulaLabel, shapeLabel } from "./shapeArea";
 
 const SQ_FT_PER_PALLET = 450; // standard sod pallet coverage
 const SQ_FT_PER_ROLL = 10; // standard large sod roll coverage
@@ -13,15 +14,128 @@ export const sodCalculator: CalculatorConfig = {
   metaDescription:
     "Sod calculator for new lawns. Enter your lawn's length and width to get the square footage, pallets, and rolls of sod you need.",
   fields: [
-    { key: "length", label: "Length", unit: "ft", type: "number", placeholder: "40", min: 0, step: 0.5 },
-    { key: "width", label: "Width", unit: "ft", type: "number", placeholder: "25", min: 0, step: 0.5 },
+    {
+      key: "shape",
+      label: "Lawn shape",
+      unit: "",
+      type: "select",
+      helperText: "Pick the shape that best matches your lawn or the area you're sodding.",
+      options: SHAPES.map((s) => ({ value: s.id, label: s.label })),
+    },
+    {
+      key: "length",
+      label: "Length",
+      unit: "ft",
+      type: "number",
+      placeholder: "40",
+      min: 0,
+      step: 0.5,
+      visibleIf: { field: "shape", equals: 1 },
+    },
+    {
+      key: "width",
+      label: "Width",
+      unit: "ft",
+      type: "number",
+      placeholder: "25",
+      min: 0,
+      step: 0.5,
+      visibleIf: { field: "shape", equals: 1 },
+    },
+    {
+      key: "diameter",
+      label: "Diameter",
+      unit: "ft",
+      type: "number",
+      placeholder: "30",
+      min: 0,
+      step: 0.5,
+      helperText: "Measure straight across the widest point of a round lawn area.",
+      visibleIf: { field: "shape", equals: 2 },
+    },
+    {
+      key: "base",
+      label: "Base",
+      unit: "ft",
+      type: "number",
+      placeholder: "40",
+      min: 0,
+      step: 0.5,
+      visibleIf: { field: "shape", equals: 3 },
+    },
+    {
+      key: "triangleHeight",
+      label: "Height",
+      unit: "ft",
+      type: "number",
+      placeholder: "25",
+      min: 0,
+      step: 0.5,
+      helperText: "Perpendicular distance from the base to the opposite point.",
+      visibleIf: { field: "shape", equals: 3 },
+    },
+    {
+      key: "outerDiameter",
+      label: "Outer diameter",
+      unit: "ft",
+      type: "number",
+      placeholder: "40",
+      min: 0,
+      step: 0.5,
+      helperText: "Measure across the outside edge of the ring-shaped lawn area.",
+      visibleIf: { field: "shape", equals: 4 },
+    },
+    {
+      key: "innerDiameter",
+      label: "Inner diameter",
+      unit: "ft",
+      type: "number",
+      placeholder: "20",
+      min: 0,
+      step: 0.5,
+      helperText: "Measure across the inside edge it circles, e.g. a driveway loop or bed.",
+      visibleIf: { field: "shape", equals: 4 },
+    },
+    {
+      key: "lengthA",
+      label: "Side A",
+      unit: "ft",
+      type: "number",
+      placeholder: "45",
+      min: 0,
+      step: 0.5,
+      helperText: "The longer parallel side.",
+      visibleIf: { field: "shape", equals: 5 },
+    },
+    {
+      key: "lengthB",
+      label: "Side B",
+      unit: "ft",
+      type: "number",
+      placeholder: "30",
+      min: 0,
+      step: 0.5,
+      helperText: "The shorter parallel side.",
+      visibleIf: { field: "shape", equals: 5 },
+    },
+    {
+      key: "trapWidth",
+      label: "Width",
+      unit: "ft",
+      type: "number",
+      placeholder: "25",
+      min: 0,
+      step: 0.5,
+      helperText: "Distance between side A and side B.",
+      visibleIf: { field: "shape", equals: 5 },
+    },
   ],
   wastePercentOptions: [5, 10],
   wastePercentDefault: 5,
   wasteHelperText: "Covers curves, obstacles, and edge trimming. 5% works for most rectangular lawns.",
   calculate: (inputs, wastePercent) => {
-    const { length, width } = inputs;
-    const areaSqFt = length * width;
+    const { shape } = inputs;
+    const areaSqFt = shapeAreaSqFt(shape, inputs);
     const withWasteSqFt = areaSqFt * (1 + wastePercent / 100);
     const sqYd = withWasteSqFt / SQ_FT_PER_SQ_YD;
     const pallets = Math.ceil(withWasteSqFt / SQ_FT_PER_PALLET);
@@ -37,7 +151,7 @@ export const sodCalculator: CalculatorConfig = {
         { label: "Rolls needed (alternative)", value: `${rolls} rolls` },
       ],
       breakdown: [
-        { label: "Area", value: `${areaSqFt.toFixed(0)} ft² (${sqYd.toFixed(1)} yd²)` },
+        { label: `${shapeAreaFormulaLabel(shape, inputs)} · ${shapeLabel(shape)}`, value: `${areaSqFt.toFixed(0)} ft² (${sqYd.toFixed(1)} yd²)` },
         { label: `With ${wastePercent}% waste`, value: `${withWasteSqFt.toFixed(0)} ft²` },
         { label: "Pallets (≈450 ft² each)", value: `${pallets} pallet${pallets === 1 ? "" : "s"}`, note: "Rounded up to the nearest full pallet" },
         { label: "Large rolls (≈10 ft² each)", value: `${rolls} rolls` },
@@ -45,10 +159,15 @@ export const sodCalculator: CalculatorConfig = {
     };
   },
   methodology:
-    "Area is calculated as length × width. We add your selected waste percentage to cover irregular edges, curves, and cutting around obstacles like trees and beds. Pallet coverage assumes approximately 450 square feet per pallet and large-roll coverage assumes approximately 10 square feet per roll, though exact coverage varies by sod farm and grass variety.",
+    "Area is calculated from the shape you select — rectangle (length × width), circle (π × radius²), triangle (½ × base × height), circular ring (π × (outer radius² − inner radius²)) for a lawn ring around a driveway loop or bed, or trapezoid (average of the two parallel sides × width). We add your selected waste percentage to cover irregular edges, curves, and cutting around obstacles like trees and beds. Pallet coverage assumes approximately 450 square feet per pallet and large-roll coverage assumes approximately 10 square feet per roll, though exact coverage varies by sod farm and grass variety.",
   example:
     "A 40 ft × 25 ft lawn is 1,000 ft². With 5% waste that's 1,050 ft², so order 3 pallets (up to 1,350 ft²) or 105 large rolls.",
   faqs: [
+    {
+      question: "My lawn isn't a rectangle — can this calculator still handle it?",
+      answer:
+        "Yes. Use the \"Lawn shape\" dropdown to switch to circle, triangle, circular ring (for a lawn ring around a driveway loop or bed), or trapezoid. Each shape shows the measurements it needs and the area formula used is shown in the breakdown.",
+    },
     {
       question: "How much does a pallet of sod cover?",
       answer:

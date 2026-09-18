@@ -1,4 +1,5 @@
 import { CalculatorConfig } from "./types";
+import { SHAPES, shapeAreaSqFt, shapeAreaFormulaLabel, shapeLabel } from "./shapeArea";
 
 const CUBIC_FT_PER_CUBIC_YD = 27;
 const LBS_PER_CUBIC_YD_TOPSOIL = 2200; // ~81 lb/ft³, typical for moist screened topsoil
@@ -12,8 +13,121 @@ export const topsoilCalculator: CalculatorConfig = {
   metaDescription:
     "Topsoil calculator for garden beds and lawn leveling. Enter length, width, and depth to get the cubic yards of topsoil you need to order.",
   fields: [
-    { key: "length", label: "Length", unit: "ft", type: "number", placeholder: "12", min: 0, step: 0.5 },
-    { key: "width", label: "Width", unit: "ft", type: "number", placeholder: "6", min: 0, step: 0.5 },
+    {
+      key: "shape",
+      label: "Bed shape",
+      unit: "",
+      type: "select",
+      helperText: "Pick the shape that best matches your bed or the area you're leveling.",
+      options: SHAPES.map((s) => ({ value: s.id, label: s.label })),
+    },
+    {
+      key: "length",
+      label: "Length",
+      unit: "ft",
+      type: "number",
+      placeholder: "12",
+      min: 0,
+      step: 0.5,
+      visibleIf: { field: "shape", equals: 1 },
+    },
+    {
+      key: "width",
+      label: "Width",
+      unit: "ft",
+      type: "number",
+      placeholder: "6",
+      min: 0,
+      step: 0.5,
+      visibleIf: { field: "shape", equals: 1 },
+    },
+    {
+      key: "diameter",
+      label: "Diameter",
+      unit: "ft",
+      type: "number",
+      placeholder: "8",
+      min: 0,
+      step: 0.5,
+      helperText: "Measure straight across the widest point, e.g. a round raised bed.",
+      visibleIf: { field: "shape", equals: 2 },
+    },
+    {
+      key: "base",
+      label: "Base",
+      unit: "ft",
+      type: "number",
+      placeholder: "10",
+      min: 0,
+      step: 0.5,
+      visibleIf: { field: "shape", equals: 3 },
+    },
+    {
+      key: "triangleHeight",
+      label: "Height",
+      unit: "ft",
+      type: "number",
+      placeholder: "6",
+      min: 0,
+      step: 0.5,
+      helperText: "Perpendicular distance from the base to the opposite point.",
+      visibleIf: { field: "shape", equals: 3 },
+    },
+    {
+      key: "outerDiameter",
+      label: "Outer diameter",
+      unit: "ft",
+      type: "number",
+      placeholder: "10",
+      min: 0,
+      step: 0.5,
+      helperText: "Measure across the outside edge of the ring-shaped bed.",
+      visibleIf: { field: "shape", equals: 4 },
+    },
+    {
+      key: "innerDiameter",
+      label: "Inner diameter",
+      unit: "ft",
+      type: "number",
+      placeholder: "4",
+      min: 0,
+      step: 0.5,
+      helperText: "Measure across the inside edge it circles.",
+      visibleIf: { field: "shape", equals: 4 },
+    },
+    {
+      key: "lengthA",
+      label: "Side A",
+      unit: "ft",
+      type: "number",
+      placeholder: "12",
+      min: 0,
+      step: 0.5,
+      helperText: "The longer parallel side.",
+      visibleIf: { field: "shape", equals: 5 },
+    },
+    {
+      key: "lengthB",
+      label: "Side B",
+      unit: "ft",
+      type: "number",
+      placeholder: "6",
+      min: 0,
+      step: 0.5,
+      helperText: "The shorter parallel side.",
+      visibleIf: { field: "shape", equals: 5 },
+    },
+    {
+      key: "trapWidth",
+      label: "Width",
+      unit: "ft",
+      type: "number",
+      placeholder: "6",
+      min: 0,
+      step: 0.5,
+      helperText: "Distance between side A and side B.",
+      visibleIf: { field: "shape", equals: 5 },
+    },
     {
       key: "depth",
       label: "Depth",
@@ -29,8 +143,8 @@ export const topsoilCalculator: CalculatorConfig = {
   wastePercentDefault: 10,
   wasteHelperText: "Covers settling and uneven grading. 10% works for most beds and lawns.",
   calculate: (inputs, wastePercent) => {
-    const { length, width, depth } = inputs;
-    const areaSqFt = length * width;
+    const { shape, depth } = inputs;
+    const areaSqFt = shapeAreaSqFt(shape, inputs);
     const depthFt = depth / 12;
     const volumeCubicFt = areaSqFt * depthFt;
     const volumeCubicYd = volumeCubicFt / CUBIC_FT_PER_CUBIC_YD;
@@ -49,7 +163,7 @@ export const topsoilCalculator: CalculatorConfig = {
         { label: "Estimated weight", value: `~${estimatedWeightTons.toFixed(1)} tons` },
       ],
       breakdown: [
-        { label: "Area", value: `${areaSqFt.toFixed(0)} ft²` },
+        { label: `${shapeAreaFormulaLabel(shape, inputs)} · ${shapeLabel(shape)}`, value: `${areaSqFt.toFixed(0)} ft²` },
         { label: `Volume (${areaSqFt.toFixed(0)} × ${depthFt.toFixed(2)} ft)`, value: `${volumeCubicFt.toFixed(1)} ft³` },
         { label: "Converted to yd³", value: `${volumeCubicYd.toFixed(2)} yd³` },
         { label: `With ${wastePercent}% waste`, value: `${withWasteCubicYd.toFixed(2)} yd³` },
@@ -59,10 +173,15 @@ export const topsoilCalculator: CalculatorConfig = {
     };
   },
   methodology:
-    "Volume is calculated as length × width × depth, converted from cubic feet to cubic yards (27 ft³ per yd³). Weight assumes moist, screened topsoil at approximately 2,200 lb per cubic yard — actual density varies with moisture content and soil composition. We add your selected waste percentage to cover settling and uneven grading, then round up to the nearest full yard since most suppliers sell topsoil by the yard.",
+    "Area is calculated from the shape you select — rectangle (length × width), circle (π × radius²), triangle (½ × base × height), circular ring (π × (outer radius² − inner radius²)), or trapezoid (average of the two parallel sides × width). That area is multiplied by depth to get volume, converted from cubic feet to cubic yards (27 ft³ per yd³). Weight assumes moist, screened topsoil at approximately 2,200 lb per cubic yard — actual density varies with moisture content and soil composition. We add your selected waste percentage to cover settling and uneven grading, then round up to the nearest full yard since most suppliers sell topsoil by the yard.",
   example:
     "A 12 ft × 6 ft raised bed area at 6 in deep needs 1.33 yd³ of topsoil. With 10% waste that's 1.47 yd³, so order 2 yd³ — about 2.2 tons.",
   faqs: [
+    {
+      question: "My bed isn't a rectangle — can this calculator still handle it?",
+      answer:
+        "Yes. Use the \"Bed shape\" dropdown to switch to circle, triangle, circular ring, or trapezoid. Each shape shows the measurements it needs and the area formula used is shown in the breakdown.",
+    },
     {
       question: "How much topsoil do I need for a raised garden bed?",
       answer:

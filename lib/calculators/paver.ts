@@ -1,4 +1,5 @@
 import { CalculatorConfig } from "./types";
+import { SHAPES, shapeAreaSqFt, shapeAreaFormulaLabel, shapeLabel } from "./shapeArea";
 
 const SQ_IN_PER_SQ_FT = 144;
 
@@ -11,8 +12,121 @@ export const paverCalculator: CalculatorConfig = {
   metaDescription:
     "Paver calculator for patios and walkways. Enter the area size and your paver's dimensions to get the number of pavers to order.",
   fields: [
-    { key: "length", label: "Area length", unit: "ft", type: "number", placeholder: "12", min: 0, step: 0.5 },
-    { key: "width", label: "Area width", unit: "ft", type: "number", placeholder: "10", min: 0, step: 0.5 },
+    {
+      key: "shape",
+      label: "Area shape",
+      unit: "",
+      type: "select",
+      helperText: "Pick the shape that best matches your patio or walkway.",
+      options: SHAPES.map((s) => ({ value: s.id, label: s.label })),
+    },
+    {
+      key: "length",
+      label: "Area length",
+      unit: "ft",
+      type: "number",
+      placeholder: "12",
+      min: 0,
+      step: 0.5,
+      visibleIf: { field: "shape", equals: 1 },
+    },
+    {
+      key: "width",
+      label: "Area width",
+      unit: "ft",
+      type: "number",
+      placeholder: "10",
+      min: 0,
+      step: 0.5,
+      visibleIf: { field: "shape", equals: 1 },
+    },
+    {
+      key: "diameter",
+      label: "Diameter",
+      unit: "ft",
+      type: "number",
+      placeholder: "10",
+      min: 0,
+      step: 0.5,
+      helperText: "Measure straight across the widest point of a round patio.",
+      visibleIf: { field: "shape", equals: 2 },
+    },
+    {
+      key: "base",
+      label: "Base",
+      unit: "ft",
+      type: "number",
+      placeholder: "12",
+      min: 0,
+      step: 0.5,
+      visibleIf: { field: "shape", equals: 3 },
+    },
+    {
+      key: "triangleHeight",
+      label: "Height",
+      unit: "ft",
+      type: "number",
+      placeholder: "8",
+      min: 0,
+      step: 0.5,
+      helperText: "Perpendicular distance from the base to the opposite point.",
+      visibleIf: { field: "shape", equals: 3 },
+    },
+    {
+      key: "outerDiameter",
+      label: "Outer diameter",
+      unit: "ft",
+      type: "number",
+      placeholder: "16",
+      min: 0,
+      step: 0.5,
+      helperText: "Measure across the outside edge, e.g. a paver path circling a fire pit.",
+      visibleIf: { field: "shape", equals: 4 },
+    },
+    {
+      key: "innerDiameter",
+      label: "Inner diameter",
+      unit: "ft",
+      type: "number",
+      placeholder: "8",
+      min: 0,
+      step: 0.5,
+      helperText: "Measure across the inside edge it circles.",
+      visibleIf: { field: "shape", equals: 4 },
+    },
+    {
+      key: "lengthA",
+      label: "Side A",
+      unit: "ft",
+      type: "number",
+      placeholder: "14",
+      min: 0,
+      step: 0.5,
+      helperText: "The longer parallel side.",
+      visibleIf: { field: "shape", equals: 5 },
+    },
+    {
+      key: "lengthB",
+      label: "Side B",
+      unit: "ft",
+      type: "number",
+      placeholder: "8",
+      min: 0,
+      step: 0.5,
+      helperText: "The shorter parallel side.",
+      visibleIf: { field: "shape", equals: 5 },
+    },
+    {
+      key: "trapWidth",
+      label: "Width",
+      unit: "ft",
+      type: "number",
+      placeholder: "10",
+      min: 0,
+      step: 0.5,
+      helperText: "Distance between side A and side B.",
+      visibleIf: { field: "shape", equals: 5 },
+    },
     {
       key: "paverArea",
       label: "Paver size",
@@ -28,8 +142,8 @@ export const paverCalculator: CalculatorConfig = {
   wastePercentDefault: 10,
   wasteHelperText: "Covers cuts, breakage, and edge trimming. 10% works for most simple layouts.",
   calculate: (inputs, wastePercent) => {
-    const { length, width, paverArea } = inputs;
-    const areaSqFt = length * width;
+    const { shape, paverArea } = inputs;
+    const areaSqFt = shapeAreaSqFt(shape, inputs);
     const areaSqIn = areaSqFt * SQ_IN_PER_SQ_FT;
     const paversNeeded = areaSqIn / paverArea;
     const withWaste = paversNeeded * (1 + wastePercent / 100);
@@ -46,7 +160,7 @@ export const paverCalculator: CalculatorConfig = {
         { label: "Coverage per paver", value: `${paverAreaSqFt.toFixed(2)} ft²` },
       ],
       breakdown: [
-        { label: "Area to cover", value: `${areaSqFt.toFixed(0)} ft² (${areaSqIn.toFixed(0)} in²)` },
+        { label: `${shapeAreaFormulaLabel(shape, inputs)} · ${shapeLabel(shape)}`, value: `${areaSqFt.toFixed(0)} ft² (${areaSqIn.toFixed(0)} in²)` },
         { label: "Paver footprint", value: `${paverArea.toFixed(0)} in²` },
         { label: "Pavers needed (no waste)", value: `${paversNeeded.toFixed(1)} pavers` },
         { label: `With ${wastePercent}% waste`, value: `${withWaste.toFixed(1)} pavers` },
@@ -55,10 +169,15 @@ export const paverCalculator: CalculatorConfig = {
     };
   },
   methodology:
-    "The area to cover (length × width, converted to square inches) is divided by the footprint of a single paver to get the base paver count. We add your selected waste percentage to account for cuts along edges, borders, and breakage, then round up to the nearest whole paver. This estimate assumes a simple running or basket-weave layout without a border course, which may need extra full pavers.",
+    "Area is calculated from the shape you select — rectangle (length × width), circle (π × radius²), triangle (½ × base × height), circular ring (π × (outer radius² − inner radius²)), or trapezoid (average of the two parallel sides × width) — then converted to square inches and divided by the footprint of a single paver to get the base paver count. We add your selected waste percentage to account for cuts along edges, borders, and breakage, then round up to the nearest whole paver. This estimate assumes a simple running or basket-weave layout without a border course, which may need extra full pavers.",
   example:
     "A 12 ft × 10 ft patio using 12 in × 8 in (96 in²) pavers needs about 180 pavers. With 10% waste for cuts and breakage, order 198 pavers.",
   faqs: [
+    {
+      question: "My patio isn't a rectangle — can this calculator still handle it?",
+      answer:
+        "Yes. Use the \"Area shape\" dropdown to switch to circle, triangle, circular ring, or trapezoid. Each shape shows the measurements it needs and the area formula used is shown in the breakdown.",
+    },
     {
       question: "How much extra should I order for cuts and breakage?",
       answer:
