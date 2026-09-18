@@ -168,6 +168,10 @@
   --spacing-20: var(--space-20);
 }
 
+:root {
+  color-scheme: light;
+}
+
 body {
   background: var(--color-bg);
   color: var(--color-text-primary);
@@ -204,4 +208,16 @@ h4 {
 :focus-visible {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
+}
+
+/* Calculator number fields use custom +/- steppers, so hide the browser's
+   native spin arrows — they render inside the input and can overlap the value. */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  appearance: textfield;
+  -moz-appearance: textfield;
 }
