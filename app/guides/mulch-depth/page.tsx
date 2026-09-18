@@ -42,8 +42,8 @@ export default function MulchDepthGuidePage() {
               <p className="mt-3 text-[16px] text-text-secondary">
                 Multiply the bed&apos;s length × width to get area, then multiply by the depth (converted to
                 feet) to get volume. A 15 ft × 8 ft bed at 3 in deep needs about 1.11 yd³ before waste. Add
-                10% for settling and uneven ground, then round up to the nearest yard for bulk delivery or
-                convert to bags for smaller beds.
+                10% for settling and uneven ground to get the waste-adjusted volume (about 1.22 yd³), then
+                round that up to the nearest 0.1 yd³ for bulk delivery, or convert to bags for smaller beds.
               </p>
               <div className="mt-4">
                 <InfoCallout>

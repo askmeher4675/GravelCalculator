@@ -1,9 +1,10 @@
 import { CalculatorConfig } from "./types";
 import { SHAPES, shapeAreaSqFt, shapeAreaFormulaLabel, shapeLabel } from "./shapeArea";
+import { rawVolume, withWaste, roundUpToIncrement } from "./volumeModel";
 
-const CUBIC_FT_PER_CUBIC_YD = 27;
 const LBS_PER_CUBIC_YD_CONCRETE = 4050; // ~150 lb/ft³ for standard concrete
 const CUBIC_FT_PER_80LB_BAG = 0.6; // yield of one 80 lb bag of ready-mix
+const ORDER_INCREMENT_YD = 0.25; // ready-mix trucks are ordered in quarter-yard increments
 
 export const concreteCalculator: CalculatorConfig = {
   slug: "concrete-calculator",
@@ -147,38 +148,43 @@ export const concreteCalculator: CalculatorConfig = {
     const { shape, thickness } = inputs;
     const areaSqFt = shapeAreaSqFt(shape, inputs);
     const thicknessFt = thickness / 12;
-    const volumeCubicFt = areaSqFt * thicknessFt;
-    const volumeCubicYd = volumeCubicFt / CUBIC_FT_PER_CUBIC_YD;
-    const withWasteCubicYd = volumeCubicYd * (1 + wastePercent / 100);
-    const recommendedOrder = Math.ceil(withWasteCubicYd * 4) / 4; // ready-mix is ordered in quarter yards
-    const bagsNeeded = Math.ceil((volumeCubicFt * (1 + wastePercent / 100)) / CUBIC_FT_PER_80LB_BAG);
-    const estimatedWeightTons = (recommendedOrder * LBS_PER_CUBIC_YD_CONCRETE) / 2000;
-    const volumeCubicM = volumeCubicYd * 0.7646;
+
+    // Single source of truth: raw volume -> waste-adjusted volume -> suggested order.
+    // Weight and bags are BOTH derived from the waste-adjusted volume, never the
+    // rounded quarter-yard order (which is only a ready-mix-truck purchasing figure).
+    const { cubicFt: rawVolumeCubicFt, cubicYd: rawVolumeCubicYd } = rawVolume(areaSqFt, thicknessFt);
+    const wasteAdjustedCubicYd = withWaste(rawVolumeCubicYd, wastePercent);
+    const wasteAdjustedCubicFt = withWaste(rawVolumeCubicFt, wastePercent);
+    const suggestedOrderYd = roundUpToIncrement(wasteAdjustedCubicYd, ORDER_INCREMENT_YD);
+    const bagsNeeded = Math.ceil(wasteAdjustedCubicFt / CUBIC_FT_PER_80LB_BAG);
+    const estimatedWeightTons = (wasteAdjustedCubicYd * LBS_PER_CUBIC_YD_CONCRETE) / 2000;
+    const rawVolumeCubicM = rawVolumeCubicYd * 0.7646;
 
     return {
-      primaryValue: volumeCubicYd.toFixed(2),
+      primaryValue: rawVolumeCubicYd.toFixed(2),
       primaryUnit: "yd³",
-      primaryExplanation: "Estimated concrete volume needed",
+      primaryExplanation: "Estimated concrete volume required",
       secondary: [
-        { label: `With ${wastePercent}% waste`, value: `${withWasteCubicYd.toFixed(2)} yd³` },
-        { label: "Recommended order", value: `${recommendedOrder.toFixed(2)} yd³` },
+        { label: `With ${wastePercent}% waste`, value: `${wasteAdjustedCubicYd.toFixed(2)} yd³` },
+        { label: "Suggested order", value: `${suggestedOrderYd.toFixed(2)} yd³` },
         { label: "80 lb bags (alternative)", value: `${bagsNeeded} bags` },
       ],
       breakdown: [
         { label: `${shapeAreaFormulaLabel(shape, inputs)} · ${shapeLabel(shape)}`, value: `${areaSqFt.toFixed(0)} ft²` },
-        { label: `Volume (${areaSqFt.toFixed(0)} × ${thicknessFt.toFixed(2)} ft)`, value: `${volumeCubicFt.toFixed(1)} ft³` },
-        { label: "Converted to yd³", value: `${volumeCubicYd.toFixed(2)} yd³` },
-        { label: `With ${wastePercent}% waste`, value: `${withWasteCubicYd.toFixed(2)} yd³` },
-        { label: "Recommended order", value: `${recommendedOrder.toFixed(2)} yd³`, note: "Rounded up to the nearest quarter yard" },
-        { label: "Estimated weight", value: `~${estimatedWeightTons.toFixed(2)} tons` },
+        { label: `Volume (${areaSqFt.toFixed(0)} × ${thicknessFt.toFixed(2)} ft)`, value: `${rawVolumeCubicFt.toFixed(1)} ft³` },
+        { label: "Required (converted to yd³)", value: `${rawVolumeCubicYd.toFixed(2)} yd³` },
+        { label: `With ${wastePercent}% waste`, value: `${wasteAdjustedCubicYd.toFixed(2)} yd³` },
+        { label: `Weight (~150 lb/ft³, incl. waste)`, value: `${estimatedWeightTons.toFixed(2)} tons` },
+        { label: `Bags at 0.6 ft³ each (incl. waste)`, value: `${bagsNeeded} bags` },
+        { label: "Suggested order", value: `${suggestedOrderYd.toFixed(2)} yd³`, note: "Rounded up to the nearest quarter yard" },
       ],
-      conversion: `= ${volumeCubicM.toFixed(2)} m³`,
+      conversion: `= ${rawVolumeCubicM.toFixed(2)} m³`,
     };
   },
   methodology:
-    "Area is calculated from the shape you select — rectangle (length × width), circle (π × radius²), triangle (½ × base × height), circular ring (π × (outer radius² − inner radius²)), or trapezoid (average of the two parallel sides × width). That area is multiplied by thickness to get volume, converted from cubic feet to cubic yards (27 ft³ per yd³). Ready-mix trucks are typically ordered in quarter-yard increments, so the recommended order is rounded up accordingly. The bag estimate assumes standard 80 lb bags of concrete mix, each yielding about 0.6 ft³ once mixed. Weight assumes standard concrete at approximately 150 lb per cubic foot. We add your selected waste percentage to cover spillage, uneven forms, and over-excavation.",
+    "Area is calculated from the shape you select — rectangle (length × width), circle (π × radius²), triangle (½ × base × height), circular ring (π × (outer radius² − inner radius²)), or trapezoid (average of the two parallel sides × width). That area is multiplied by thickness to get the exact volume required, converted from cubic feet to cubic yards (27 ft³ per yd³). Your selected waste percentage is added to that required volume to get the waste-adjusted volume, and weight and bag count are both calculated from that same waste-adjusted volume — weight assumes standard concrete at approximately 150 lb per cubic foot, and the bag estimate assumes standard 80 lb bags of concrete mix, each yielding about 0.6 ft³ once mixed. Ready-mix trucks are typically ordered in quarter-yard increments, so the suggested order separately rounds the waste-adjusted volume up to the nearest quarter yard.",
   example:
-    "A 10 ft × 10 ft slab at 4 in thick needs 1.23 yd³ of concrete. With 10% waste that's 1.36 yd³, so order 1.5 yd³ from a ready-mix truck — or about 62 bags of 80 lb mix.",
+    "A 10 ft × 10 ft slab at 4 in thick needs 1.23 yd³ of concrete. With 10% waste that's 1.36 yd³ — about 2.75 tons, or 62 bags of 80 lb mix — so suggested order is 1.50 yd³ from a ready-mix truck.",
   faqs: [
     {
       question: "My slab isn't a rectangle — can this calculator still handle it?",
