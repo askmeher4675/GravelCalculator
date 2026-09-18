@@ -26,9 +26,9 @@ export function FAQAccordion({ items }: { items: FaqItem[] }) {
                 ▾
               </span>
             </button>
-            {isOpen && (
-              <p className="pb-4 text-[16px] text-text-secondary">{item.answer}</p>
-            )}
+            <p className={`pb-4 text-[16px] text-text-secondary ${isOpen ? "" : "hidden"}`}>
+              {item.answer}
+            </p>
           </div>
         );
       })}

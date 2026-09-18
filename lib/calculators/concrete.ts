@@ -10,6 +10,8 @@ export const concreteCalculator: CalculatorConfig = {
   category: "Concrete & Masonry",
   intro:
     "Estimate how many cubic yards of ready-mix concrete — or how many 80 lb bags — you need for a slab, footing, or walkway.",
+  metaDescription:
+    "Concrete calculator for slabs, footings, and walkways. Enter length, width, and thickness to get cubic yards of ready-mix concrete or the number of 80 lb bags needed.",
   fields: [
     { key: "length", label: "Length", unit: "ft", type: "number", placeholder: "10", min: 0, step: 0.5 },
     { key: "width", label: "Width", unit: "ft", type: "number", placeholder: "10", min: 0, step: 0.5 },
@@ -26,6 +28,7 @@ export const concreteCalculator: CalculatorConfig = {
   ],
   wastePercentOptions: [5, 10, 15],
   wastePercentDefault: 10,
+  wasteHelperText: "Covers spillage, uneven forms, and over-excavation. 10% works for most slabs.",
   calculate: (inputs, wastePercent) => {
     const { length, width, thickness } = inputs;
     const areaSqFt = length * width;
@@ -94,4 +97,5 @@ export const concreteCalculator: CalculatorConfig = {
     { slug: "paver-calculator", title: "Paver Calculator" },
     { slug: "deck-calculator", title: "Deck Calculator" },
   ],
+  relatedGuides: [{ href: "/guides/concrete-slab-thickness", title: "Concrete slab thickness guide" }],
 };

@@ -1,7 +1,7 @@
 "use client";
 
 import { FormEvent, useState } from "react";
-import { CalculationOutput } from "@/lib/calculators/types";
+import { CalculationOutput, FieldConfig } from "@/lib/calculators/types";
 import { calculators } from "@/lib/calculators";
 import { CalculatorField } from "./CalculatorField";
 import { WastePercentageSelector } from "./WastePercentageSelector";
@@ -9,11 +9,22 @@ import { CalculateButton } from "./CalculateButton";
 import { ResetButton } from "./ResetButton";
 import { ResultPanel } from "./ResultPanel";
 
+function defaultValues(config: (typeof calculators)[string]) {
+  return Object.fromEntries(
+    config.fields.map((f) => [f.key, f.type === "select" ? String(f.options?.[0]?.value ?? "") : ""]),
+  );
+}
+
+function isFieldVisible(field: FieldConfig, values: Record<string, string>) {
+  if (!field.visibleIf) return true;
+  const current = parseFloat(values[field.visibleIf.field]);
+  const equals = Array.isArray(field.visibleIf.equals) ? field.visibleIf.equals : [field.visibleIf.equals];
+  return equals.includes(current);
+}
+
 export function CalculatorShell({ slug }: { slug: string }) {
   const config = calculators[slug];
-  const [values, setValues] = useState<Record<string, string>>(
-    Object.fromEntries(config.fields.map((f) => [f.key, ""])),
-  );
+  const [values, setValues] = useState<Record<string, string>>(() => defaultValues(config));
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [wastePercent, setWastePercent] = useState(config.wastePercentDefault ?? 10);
   const [result, setResult] = useState<CalculationOutput | null>(null);
@@ -23,8 +34,9 @@ export function CalculatorShell({ slug }: { slug: string }) {
     e.preventDefault();
     const nextErrors: Record<string, string> = {};
     const parsed: Record<string, number> = {};
+    const visibleFields = config.fields.filter((f) => isFieldVisible(f, values));
 
-    for (const field of config.fields) {
+    for (const field of visibleFields) {
       const raw = values[field.key];
       const num = parseFloat(raw);
       if (raw === "" || Number.isNaN(num)) {
@@ -46,7 +58,7 @@ export function CalculatorShell({ slug }: { slug: string }) {
   }
 
   function handleReset() {
-    setValues(Object.fromEntries(config.fields.map((f) => [f.key, ""])));
+    setValues(defaultValues(config));
     setErrors({});
     setWastePercent(config.wastePercentDefault ?? 10);
     setResult(null);
@@ -60,15 +72,17 @@ export function CalculatorShell({ slug }: { slug: string }) {
         className="rounded-[8px] border border-border bg-surface p-6 md:p-8"
       >
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-          {config.fields.map((field) => (
-            <CalculatorField
-              key={field.key}
-              field={field}
-              value={values[field.key]}
-              error={errors[field.key]}
-              onChange={(v) => setValues((prev) => ({ ...prev, [field.key]: v }))}
-            />
-          ))}
+          {config.fields
+            .filter((field) => isFieldVisible(field, values))
+            .map((field) => (
+              <CalculatorField
+                key={field.key}
+                field={field}
+                value={values[field.key]}
+                error={errors[field.key]}
+                onChange={(v) => setValues((prev) => ({ ...prev, [field.key]: v }))}
+              />
+            ))}
         </div>
 
         {config.wastePercentOptions && (
@@ -78,6 +92,7 @@ export function CalculatorShell({ slug }: { slug: string }) {
               options={config.wastePercentOptions}
               value={wastePercent}
               onChange={setWastePercent}
+              helperText={config.wasteHelperText}
             />
           </div>
         )}

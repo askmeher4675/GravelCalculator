@@ -6,14 +6,16 @@ interface WastePercentageSelectorProps {
   options: number[];
   value: number;
   onChange: (value: number) => void;
+  helperText?: string;
 }
 
 const CUSTOM_STEP = 0.5;
+const DEFAULT_HELPER_TEXT = "Covers uneven ground, spillage, and compaction. 10% works for most projects.";
 
 const customStepperButtonClass =
   "flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center border text-[18px] font-semibold text-text-secondary transition-colors hover:border-primary hover:text-primary disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-border-strong disabled:hover:text-text-secondary";
 
-export function WastePercentageSelector({ options, value, onChange }: WastePercentageSelectorProps) {
+export function WastePercentageSelector({ options, value, onChange, helperText }: WastePercentageSelectorProps) {
   const [customMode, setCustomMode] = useState(!options.includes(value));
 
   const adjustCustom = (direction: 1 | -1) => {
@@ -104,7 +106,7 @@ export function WastePercentageSelector({ options, value, onChange }: WastePerce
         )}
       </div>
       <p className="mt-1.5 text-[14px] text-text-muted">
-        Covers uneven ground, spillage, and compaction. 10% works for most projects.
+        {helperText ?? DEFAULT_HELPER_TEXT}
       </p>
     </div>
   );

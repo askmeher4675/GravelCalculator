@@ -1,14 +1,22 @@
-export type FieldType = "number";
+export type FieldType = "number" | "select";
+
+export interface SelectOption {
+  value: number;
+  label: string;
+}
 
 export interface FieldConfig {
   key: string;
   label: string;
   unit: string;
   type: FieldType;
-  placeholder: string;
+  placeholder?: string;
   helperText?: string;
   min?: number;
   step?: number;
+  options?: SelectOption[];
+  /** Only render/require this field when another field's value matches. */
+  visibleIf?: { field: string; equals: number | number[] };
 }
 
 export interface BreakdownRow {
@@ -41,14 +49,21 @@ export interface RelatedCalculatorRef {
   title: string;
 }
 
+export interface RelatedGuideRef {
+  href: string;
+  title: string;
+}
+
 export interface CalculatorConfig {
   slug: string;
   title: string;
   category: string;
   intro: string;
+  metaDescription: string;
   fields: FieldConfig[];
   wastePercentOptions?: number[];
   wastePercentDefault?: number;
+  wasteHelperText?: string;
   calculate: (
     inputs: Record<string, number>,
     wastePercent: number,
@@ -57,4 +72,5 @@ export interface CalculatorConfig {
   example: string;
   faqs: FaqItem[];
   related: RelatedCalculatorRef[];
+  relatedGuides?: RelatedGuideRef[];
 }

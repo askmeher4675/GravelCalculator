@@ -8,6 +8,8 @@ export const paintCalculator: CalculatorConfig = {
   category: "Painting",
   intro:
     "Estimate how many gallons of paint you need for a room or wall based on the total wall length, height, and number of coats.",
+  metaDescription:
+    "Paint calculator for rooms and walls. Enter wall length, height, and number of coats to get the gallons of paint you need to buy.",
   fields: [
     {
       key: "wallLength",
@@ -33,6 +35,7 @@ export const paintCalculator: CalculatorConfig = {
   ],
   wastePercentOptions: [0, 10],
   wastePercentDefault: 10,
+  wasteHelperText: "Covers cutting-in, touch-ups, and second-coat overlap. 10% works for most rooms.",
   calculate: (inputs, wastePercent) => {
     const { wallLength, wallHeight, coats } = inputs;
     const wallAreaSqFt = wallLength * wallHeight;

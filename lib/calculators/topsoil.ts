@@ -9,6 +9,8 @@ export const topsoilCalculator: CalculatorConfig = {
   category: "Lawn & Garden",
   intro:
     "Estimate how many cubic yards of topsoil you need to fill a garden bed, raised bed, or level a section of lawn.",
+  metaDescription:
+    "Topsoil calculator for garden beds and lawn leveling. Enter length, width, and depth to get the cubic yards of topsoil you need to order.",
   fields: [
     { key: "length", label: "Length", unit: "ft", type: "number", placeholder: "12", min: 0, step: 0.5 },
     { key: "width", label: "Width", unit: "ft", type: "number", placeholder: "6", min: 0, step: 0.5 },
@@ -25,6 +27,7 @@ export const topsoilCalculator: CalculatorConfig = {
   ],
   wastePercentOptions: [5, 10, 15],
   wastePercentDefault: 10,
+  wasteHelperText: "Covers settling and uneven grading. 10% works for most beds and lawns.",
   calculate: (inputs, wastePercent) => {
     const { length, width, depth } = inputs;
     const areaSqFt = length * width;

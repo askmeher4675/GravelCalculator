@@ -8,6 +8,8 @@ export const paverCalculator: CalculatorConfig = {
   category: "Landscaping",
   intro:
     "Estimate how many pavers you need for a patio or walkway based on the area size and the dimensions of a single paver.",
+  metaDescription:
+    "Paver calculator for patios and walkways. Enter the area size and your paver's dimensions to get the number of pavers to order.",
   fields: [
     { key: "length", label: "Area length", unit: "ft", type: "number", placeholder: "12", min: 0, step: 0.5 },
     { key: "width", label: "Area width", unit: "ft", type: "number", placeholder: "10", min: 0, step: 0.5 },
@@ -24,6 +26,7 @@ export const paverCalculator: CalculatorConfig = {
   ],
   wastePercentOptions: [5, 10, 15],
   wastePercentDefault: 10,
+  wasteHelperText: "Covers cuts, breakage, and edge trimming. 10% works for most simple layouts.",
   calculate: (inputs, wastePercent) => {
     const { length, width, paverArea } = inputs;
     const areaSqFt = length * width;

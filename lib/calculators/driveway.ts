@@ -9,6 +9,8 @@ export const drivewayCalculator: CalculatorConfig = {
   category: "Landscaping",
   intro:
     "Estimate the total gravel volume for a driveway built with a compacted base layer and a top surface layer.",
+  metaDescription:
+    "Driveway gravel calculator. Enter driveway length, width, base depth, and surface depth to get total gravel volume and estimated weight.",
   fields: [
     { key: "length", label: "Length", unit: "ft", type: "number", placeholder: "50", min: 0, step: 0.5 },
     { key: "width", label: "Width", unit: "ft", type: "number", placeholder: "12", min: 0, step: 0.5 },
@@ -35,6 +37,7 @@ export const drivewayCalculator: CalculatorConfig = {
   ],
   wastePercentOptions: [5, 10, 15],
   wastePercentDefault: 10,
+  wasteHelperText: "Covers compaction, spillage, and uneven sub-grade. 10% works for most driveways.",
   calculate: (inputs, wastePercent) => {
     const { length, width, baseDepth, surfaceDepth } = inputs;
     const areaSqFt = length * width;
@@ -101,4 +104,5 @@ export const drivewayCalculator: CalculatorConfig = {
     { slug: "concrete-calculator", title: "Concrete Calculator" },
     { slug: "paver-calculator", title: "Paver Calculator" },
   ],
+  relatedGuides: [{ href: "/guides/gravel-driveway", title: "How much gravel for a driveway" }],
 };

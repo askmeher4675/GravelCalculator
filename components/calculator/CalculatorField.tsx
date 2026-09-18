@@ -11,6 +11,48 @@ const stepperButtonClass =
   "flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center border text-[18px] font-semibold text-text-secondary transition-colors hover:border-primary hover:text-primary disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-border-strong disabled:hover:text-text-secondary";
 
 export function CalculatorField({ field, value, error, onChange }: CalculatorFieldProps) {
+  if (field.type === "select") {
+    return (
+      <div>
+        <label
+          htmlFor={field.key}
+          className="mb-2 block text-[13px] font-semibold uppercase tracking-wide text-text-secondary"
+        >
+          {field.label}
+        </label>
+        <select
+          id={field.key}
+          name={field.key}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          aria-invalid={Boolean(error)}
+          aria-describedby={
+            error ? `${field.key}-error` : field.helperText ? `${field.key}-help` : undefined
+          }
+          className={`h-11 w-full rounded-lg border bg-surface px-3 text-[15px] text-text-primary outline-none transition-colors focus-visible:ring-2 focus-visible:ring-primary ${
+            error ? "border-error" : "border-border-strong"
+          }`}
+        >
+          {(field.options ?? []).map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+        {field.helperText && !error && (
+          <p id={`${field.key}-help`} className="mt-1.5 text-[14px] text-text-muted">
+            {field.helperText}
+          </p>
+        )}
+        {error && (
+          <p id={`${field.key}-error`} className="mt-1.5 text-[14px] text-error">
+            {error}
+          </p>
+        )}
+      </div>
+    );
+  }
+
   const step = field.step ?? 0.5;
   const min = field.min;
 

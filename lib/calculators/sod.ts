@@ -10,12 +10,15 @@ export const sodCalculator: CalculatorConfig = {
   category: "Lawn & Garden",
   intro:
     "Estimate how much sod you need for a new lawn, in square feet, pallets, or rolls, based on the area's length and width.",
+  metaDescription:
+    "Sod calculator for new lawns. Enter your lawn's length and width to get the square footage, pallets, and rolls of sod you need.",
   fields: [
     { key: "length", label: "Length", unit: "ft", type: "number", placeholder: "40", min: 0, step: 0.5 },
     { key: "width", label: "Width", unit: "ft", type: "number", placeholder: "25", min: 0, step: 0.5 },
   ],
   wastePercentOptions: [5, 10],
   wastePercentDefault: 5,
+  wasteHelperText: "Covers curves, obstacles, and edge trimming. 5% works for most rectangular lawns.",
   calculate: (inputs, wastePercent) => {
     const { length, width } = inputs;
     const areaSqFt = length * width;
