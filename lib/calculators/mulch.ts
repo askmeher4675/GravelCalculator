@@ -1,4 +1,5 @@
 import { CalculatorConfig } from "./types";
+import { SHAPES, shapeAreaSqFt, shapeAreaFormulaLabel, shapeLabel } from "./shapeArea";
 
 const CUBIC_FT_PER_CUBIC_YD = 27;
 const LBS_PER_CUBIC_YD_MULCH = 500; // ~18.5 lb/ft³, typical for shredded bark mulch
@@ -13,8 +14,121 @@ export const mulchCalculator: CalculatorConfig = {
   metaDescription:
     "Mulch calculator for garden beds and landscaping. Enter length, width, and depth to get cubic yards of bulk mulch or the number of 2 ft³ bags needed.",
   fields: [
-    { key: "length", label: "Length", unit: "ft", type: "number", placeholder: "15", min: 0, step: 0.5 },
-    { key: "width", label: "Width", unit: "ft", type: "number", placeholder: "8", min: 0, step: 0.5 },
+    {
+      key: "shape",
+      label: "Bed shape",
+      unit: "",
+      type: "select",
+      helperText: "Pick the shape that best matches your garden bed or landscaping area.",
+      options: SHAPES.map((s) => ({ value: s.id, label: s.label })),
+    },
+    {
+      key: "length",
+      label: "Length",
+      unit: "ft",
+      type: "number",
+      placeholder: "15",
+      min: 0,
+      step: 0.5,
+      visibleIf: { field: "shape", equals: 1 },
+    },
+    {
+      key: "width",
+      label: "Width",
+      unit: "ft",
+      type: "number",
+      placeholder: "8",
+      min: 0,
+      step: 0.5,
+      visibleIf: { field: "shape", equals: 1 },
+    },
+    {
+      key: "diameter",
+      label: "Diameter",
+      unit: "ft",
+      type: "number",
+      placeholder: "8",
+      min: 0,
+      step: 0.5,
+      helperText: "Measure straight across the widest point, e.g. a round tree ring or bed.",
+      visibleIf: { field: "shape", equals: 2 },
+    },
+    {
+      key: "base",
+      label: "Base",
+      unit: "ft",
+      type: "number",
+      placeholder: "10",
+      min: 0,
+      step: 0.5,
+      visibleIf: { field: "shape", equals: 3 },
+    },
+    {
+      key: "triangleHeight",
+      label: "Height",
+      unit: "ft",
+      type: "number",
+      placeholder: "6",
+      min: 0,
+      step: 0.5,
+      helperText: "Perpendicular distance from the base to the opposite point.",
+      visibleIf: { field: "shape", equals: 3 },
+    },
+    {
+      key: "outerDiameter",
+      label: "Outer diameter",
+      unit: "ft",
+      type: "number",
+      placeholder: "10",
+      min: 0,
+      step: 0.5,
+      helperText: "Measure across the outside edge, e.g. a mulch ring around a tree.",
+      visibleIf: { field: "shape", equals: 4 },
+    },
+    {
+      key: "innerDiameter",
+      label: "Inner diameter",
+      unit: "ft",
+      type: "number",
+      placeholder: "2",
+      min: 0,
+      step: 0.5,
+      helperText: "Measure across the inside edge, e.g. the trunk clearance you're leaving.",
+      visibleIf: { field: "shape", equals: 4 },
+    },
+    {
+      key: "lengthA",
+      label: "Side A",
+      unit: "ft",
+      type: "number",
+      placeholder: "15",
+      min: 0,
+      step: 0.5,
+      helperText: "The longer parallel side.",
+      visibleIf: { field: "shape", equals: 5 },
+    },
+    {
+      key: "lengthB",
+      label: "Side B",
+      unit: "ft",
+      type: "number",
+      placeholder: "8",
+      min: 0,
+      step: 0.5,
+      helperText: "The shorter parallel side.",
+      visibleIf: { field: "shape", equals: 5 },
+    },
+    {
+      key: "trapWidth",
+      label: "Width",
+      unit: "ft",
+      type: "number",
+      placeholder: "6",
+      min: 0,
+      step: 0.5,
+      helperText: "Distance between side A and side B.",
+      visibleIf: { field: "shape", equals: 5 },
+    },
     {
       key: "depth",
       label: "Depth",
@@ -30,8 +144,8 @@ export const mulchCalculator: CalculatorConfig = {
   wastePercentDefault: 10,
   wasteHelperText: "Covers settling, uneven ground, and spillage. 10% works for most garden beds.",
   calculate: (inputs, wastePercent) => {
-    const { length, width, depth } = inputs;
-    const areaSqFt = length * width;
+    const { shape, depth } = inputs;
+    const areaSqFt = shapeAreaSqFt(shape, inputs);
     const depthFt = depth / 12;
     const volumeCubicFt = areaSqFt * depthFt;
     const volumeCubicYd = volumeCubicFt / CUBIC_FT_PER_CUBIC_YD;
@@ -51,7 +165,7 @@ export const mulchCalculator: CalculatorConfig = {
         { label: "2 ft³ bags (alternative)", value: `${bagsNeeded} bags` },
       ],
       breakdown: [
-        { label: "Area", value: `${areaSqFt.toFixed(0)} ft²` },
+        { label: `${shapeAreaFormulaLabel(shape, inputs)} · ${shapeLabel(shape)}`, value: `${areaSqFt.toFixed(0)} ft²` },
         { label: `Volume (${areaSqFt.toFixed(0)} × ${depthFt.toFixed(2)} ft)`, value: `${volumeCubicFt.toFixed(1)} ft³` },
         { label: "Converted to yd³", value: `${volumeCubicYd.toFixed(2)} yd³` },
         { label: `With ${wastePercent}% waste`, value: `${withWasteCubicYd.toFixed(2)} yd³` },
@@ -62,10 +176,15 @@ export const mulchCalculator: CalculatorConfig = {
     };
   },
   methodology:
-    "Volume is calculated as length × width × depth, converted from cubic feet to cubic yards (27 ft³ per yd³). Weight assumes standard shredded bark mulch at approximately 500 lb per cubic yard — actual density varies with moisture and mulch type. The bag estimate assumes standard 2 cubic foot bags. We add your selected waste percentage to cover settling, uneven ground, and spillage, then round up to the nearest full yard for bulk orders.",
+    "Area is calculated from the shape you select — rectangle (length × width), circle (π × radius²), triangle (½ × base × height), circular ring (π × (outer radius² − inner radius²)) for a mulch ring around a tree, or trapezoid (average of the two parallel sides × width). That area is multiplied by depth to get volume, converted from cubic feet to cubic yards (27 ft³ per yd³). Weight assumes standard shredded bark mulch at approximately 500 lb per cubic yard — actual density varies with moisture and mulch type. The bag estimate assumes standard 2 cubic foot bags. We add your selected waste percentage to cover settling, uneven ground, and spillage, then round up to the nearest full yard for bulk orders.",
   example:
     "A 15 ft × 8 ft garden bed at 3 in deep needs 1.11 yd³ of mulch. With 10% waste that's 1.22 yd³, so order 2 yd³ in bulk — or about 17 bags of 2 ft³ mulch.",
   faqs: [
+    {
+      question: "My bed isn't a rectangle — can this calculator still handle it?",
+      answer:
+        "Yes. Use the \"Bed shape\" dropdown to switch to circle, triangle, circular ring (for a mulch ring around a tree), or trapezoid. Each shape shows the measurements it needs and the area formula used is shown in the breakdown.",
+    },
     {
       question: "How deep should mulch be in a garden bed?",
       answer:
