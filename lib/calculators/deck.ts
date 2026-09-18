@@ -9,6 +9,8 @@ export const deckCalculator: CalculatorConfig = {
   category: "Decks & Outdoor Projects",
   intro:
     "Estimate the square footage, decking boards, and joists you need to build a deck based on its length, width, and board width.",
+  metaDescription:
+    "Deck calculator for decking boards and joists. Enter deck length, width, and board width to get square footage, boards, and joist count.",
   fields: [
     { key: "length", label: "Deck length", unit: "ft", type: "number", placeholder: "16", min: 0, step: 0.5 },
     { key: "width", label: "Deck width", unit: "ft", type: "number", placeholder: "12", min: 0, step: 0.5 },
@@ -25,6 +27,7 @@ export const deckCalculator: CalculatorConfig = {
   ],
   wastePercentOptions: [10, 15],
   wastePercentDefault: 10,
+  wasteHelperText: "Covers angled cuts, staggered seams, and defects. 10% works for most simple decks.",
   calculate: (inputs, wastePercent) => {
     const { length, width, boardWidth } = inputs;
     const areaSqFt = length * width;

@@ -1,4 +1,6 @@
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
+import Link from "next/link";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { PageContainer } from "@/components/layout/PageContainer";
@@ -13,6 +15,20 @@ export function generateStaticParams() {
   return Object.keys(calculators).map((slug) => ({ slug }));
 }
 
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const config = calculators[slug];
+  if (!config) return {};
+  return {
+    title: `${config.title} - ${config.category}`,
+    description: config.metaDescription,
+  };
+}
+
 export default async function CalculatorPage({
   params,
 }: {
@@ -22,8 +38,22 @@ export default async function CalculatorPage({
   const config = calculators[slug];
   if (!config) notFound();
 
+  const faqJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: config.faqs.map((faq) => ({
+      "@type": "Question",
+      name: faq.question,
+      acceptedAnswer: { "@type": "Answer", text: faq.answer },
+    })),
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
       <Header />
       <main className="flex-1 py-8 md:py-12">
         <PageContainer>
@@ -61,6 +91,21 @@ export default async function CalculatorPage({
                 <RelatedCalculators items={config.related} />
               </div>
             </section>
+
+            {config.relatedGuides && config.relatedGuides.length > 0 && (
+              <section className="mt-12">
+                <h2>Related guides</h2>
+                <ul className="mt-4 space-y-2">
+                  {config.relatedGuides.map((guide) => (
+                    <li key={guide.href}>
+                      <Link href={guide.href} className="text-[16px] font-medium text-primary hover:underline">
+                        {guide.title} →
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )}
 
             <section className="mt-12">
               <h2>Frequently asked questions</h2>

@@ -2,9 +2,8 @@ import Link from "next/link";
 import { PageContainer } from "./PageContainer";
 
 const NAV_LINKS = [
-  { href: "/", label: "Home" },
-  { href: "/calculators", label: "Calculators" },
-  { href: "/calculators", label: "Categories" },
+  { href: "/calculators/gravel-calculator", label: "Gravel Calculator" },
+  { href: "/calculators", label: "All Calculators" },
   { href: "/guides", label: "Guides" },
   { href: "/about", label: "About" },
 ];
@@ -20,7 +19,7 @@ export function Header() {
               style={{ background: "var(--gradient-hero)" }}
               aria-hidden="true"
             />
-            Home Project Calculators
+            Gravel Cost Calculator
           </Link>
           <nav className="hidden md:flex items-center gap-8">
             {NAV_LINKS.map((link) => (

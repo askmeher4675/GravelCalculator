@@ -15,11 +15,11 @@ const plexMono = IBM_Plex_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "Home Project Calculators",
-    template: "%s | Home Project Calculators",
+    default: "Gravel Calculator - Estimate Gravel Cost, Tons & Yards",
+    template: "%s | Gravel Cost Calculator",
   },
   description:
-    "Calculate the materials and quantities you need for your next home improvement project.",
+    "Free gravel cost calculator: enter your area, gravel type, and price per ton to estimate cubic yards, tons, and total cost. Plus calculators for concrete, mulch, pavers, and more.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

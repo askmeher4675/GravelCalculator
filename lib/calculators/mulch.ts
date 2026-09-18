@@ -10,6 +10,8 @@ export const mulchCalculator: CalculatorConfig = {
   category: "Lawn & Garden",
   intro:
     "Estimate how many cubic yards or bags of mulch you need for a garden bed or landscaping area based on size and depth.",
+  metaDescription:
+    "Mulch calculator for garden beds and landscaping. Enter length, width, and depth to get cubic yards of bulk mulch or the number of 2 ft³ bags needed.",
   fields: [
     { key: "length", label: "Length", unit: "ft", type: "number", placeholder: "15", min: 0, step: 0.5 },
     { key: "width", label: "Width", unit: "ft", type: "number", placeholder: "8", min: 0, step: 0.5 },
@@ -26,6 +28,7 @@ export const mulchCalculator: CalculatorConfig = {
   ],
   wastePercentOptions: [5, 10, 15],
   wastePercentDefault: 10,
+  wasteHelperText: "Covers settling, uneven ground, and spillage. 10% works for most garden beds.",
   calculate: (inputs, wastePercent) => {
     const { length, width, depth } = inputs;
     const areaSqFt = length * width;
@@ -94,4 +97,5 @@ export const mulchCalculator: CalculatorConfig = {
     { slug: "gravel-calculator", title: "Gravel Calculator" },
     { slug: "sod-calculator", title: "Sod Calculator" },
   ],
+  relatedGuides: [{ href: "/guides/mulch-depth", title: "Mulch depth by plant type" }],
 };

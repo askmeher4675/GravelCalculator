@@ -9,11 +9,15 @@ import { CalculateButton } from "./CalculateButton";
 import { ResetButton } from "./ResetButton";
 import { ResultPanel } from "./ResultPanel";
 
+function defaultValues(config: (typeof calculators)[string]) {
+  return Object.fromEntries(
+    config.fields.map((f) => [f.key, f.type === "select" ? String(f.options?.[0]?.value ?? "") : ""]),
+  );
+}
+
 export function CalculatorShell({ slug }: { slug: string }) {
   const config = calculators[slug];
-  const [values, setValues] = useState<Record<string, string>>(
-    Object.fromEntries(config.fields.map((f) => [f.key, ""])),
-  );
+  const [values, setValues] = useState<Record<string, string>>(() => defaultValues(config));
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [wastePercent, setWastePercent] = useState(config.wastePercentDefault ?? 10);
   const [result, setResult] = useState<CalculationOutput | null>(null);
@@ -46,7 +50,7 @@ export function CalculatorShell({ slug }: { slug: string }) {
   }
 
   function handleReset() {
-    setValues(Object.fromEntries(config.fields.map((f) => [f.key, ""])));
+    setValues(defaultValues(config));
     setErrors({});
     setWastePercent(config.wastePercentDefault ?? 10);
     setResult(null);
@@ -78,6 +82,7 @@ export function CalculatorShell({ slug }: { slug: string }) {
               options={config.wastePercentOptions}
               value={wastePercent}
               onChange={setWastePercent}
+              helperText={config.wasteHelperText}
             />
           </div>
         )}

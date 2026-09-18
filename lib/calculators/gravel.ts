@@ -1,14 +1,24 @@
 import { CalculatorConfig } from "./types";
 
 const CUBIC_FT_PER_CUBIC_YD = 27;
-const LBS_PER_CUBIC_YD_GRAVEL = 2800; // ~1.4 tons per yd³, standard crushed gravel density
+
+// Approximate density by gravel type, in lb per cubic yard.
+const GRAVEL_TYPES = [
+  { id: 1, label: "Crushed Stone (#57)", lbPerCubicYd: 2600 },
+  { id: 2, label: "Pea Gravel", lbPerCubicYd: 2800 },
+  { id: 3, label: "Crushed Limestone", lbPerCubicYd: 2700 },
+  { id: 4, label: "River Rock", lbPerCubicYd: 2650 },
+  { id: 5, label: "Decomposed Granite", lbPerCubicYd: 2800 },
+];
 
 export const gravelCalculator: CalculatorConfig = {
   slug: "gravel-calculator",
   title: "Gravel Calculator",
   category: "Landscaping",
   intro:
-    "Estimate how many cubic yards of gravel you need for a driveway, walkway, or drainage bed based on the area's length, width, and depth.",
+    "Calculate how much gravel you need — and what it will cost — for a driveway, walkway, or drainage bed. Enter your area, gravel type, and price per ton to get cubic yards, tons, and total estimated cost.",
+  metaDescription:
+    "Free gravel cost calculator. Enter length, width, depth, gravel type, and price per ton to instantly estimate cubic yards, tons needed, and total cost.",
   fields: [
     { key: "length", label: "Length", unit: "ft", type: "number", placeholder: "20", min: 0, step: 0.5 },
     { key: "width", label: "Width", unit: "ft", type: "number", placeholder: "10", min: 0, step: 0.5 },
@@ -22,43 +32,66 @@ export const gravelCalculator: CalculatorConfig = {
       step: 0.5,
       helperText: "Most driveways use 4–6 in of gravel depth.",
     },
+    {
+      key: "gravelType",
+      label: "Gravel type",
+      unit: "",
+      type: "select",
+      helperText: "Density affects how many tons your order weighs.",
+      options: GRAVEL_TYPES.map((t) => ({ value: t.id, label: t.label })),
+    },
+    {
+      key: "pricePerTon",
+      label: "Price per ton",
+      unit: "$/ton",
+      type: "number",
+      placeholder: "55",
+      min: 0,
+      step: 1,
+      helperText: "Check with your local supplier — gravel typically runs $15–$75 per ton.",
+    },
   ],
   wastePercentOptions: [5, 10, 15],
   wastePercentDefault: 10,
+  wasteHelperText: "Covers uneven sub-grade, spillage, and compaction. 10% works for most driveways.",
   calculate: (inputs, wastePercent) => {
-    const { length, width, depth } = inputs;
+    const { length, width, depth, gravelType, pricePerTon } = inputs;
+    const gravel = GRAVEL_TYPES.find((t) => t.id === gravelType) ?? GRAVEL_TYPES[0];
     const areaSqFt = length * width;
     const depthFt = depth / 12;
     const volumeCubicFt = areaSqFt * depthFt;
     const volumeCubicYd = volumeCubicFt / CUBIC_FT_PER_CUBIC_YD;
     const withWasteCubicYd = volumeCubicYd * (1 + wastePercent / 100);
-    const recommendedOrder = Math.ceil(withWasteCubicYd);
-    const estimatedWeightTons = (recommendedOrder * LBS_PER_CUBIC_YD_GRAVEL) / 2000;
+    const recommendedOrderYd = Math.ceil(withWasteCubicYd);
+    const estimatedTons = (recommendedOrderYd * gravel.lbPerCubicYd) / 2000;
+    const totalCost = estimatedTons * pricePerTon;
     const volumeCubicM = volumeCubicYd * 0.7646;
 
     return {
-      primaryValue: volumeCubicYd.toFixed(2),
-      primaryUnit: "yd³",
-      primaryExplanation: "Estimated gravel volume needed",
+      primaryValue: `$${totalCost.toFixed(2)}`,
+      primaryUnit: "",
+      primaryExplanation: "Estimated total cost for materials",
       secondary: [
-        { label: `With ${wastePercent}% waste`, value: `${withWasteCubicYd.toFixed(2)} yd³` },
-        { label: "Recommended order", value: `${recommendedOrder} yd³` },
-        { label: "Estimated weight", value: `~${estimatedWeightTons.toFixed(1)} tons` },
+        { label: "Cubic yards needed", value: `${recommendedOrderYd} yd³` },
+        { label: "Estimated tons", value: `${estimatedTons.toFixed(2)} tons` },
+        { label: "Gravel type", value: gravel.label },
       ],
       breakdown: [
         { label: "Area", value: `${areaSqFt.toFixed(0)} ft²` },
         { label: `Volume (${areaSqFt.toFixed(0)} × ${depthFt.toFixed(2)} ft)`, value: `${volumeCubicFt.toFixed(1)} ft³` },
         { label: "Converted to yd³", value: `${volumeCubicYd.toFixed(2)} yd³` },
         { label: `With ${wastePercent}% waste`, value: `${withWasteCubicYd.toFixed(2)} yd³` },
-        { label: "Recommended order", value: `${recommendedOrder} yd³`, note: "Rounded up to the nearest yard" },
+        { label: "Recommended order", value: `${recommendedOrderYd} yd³`, note: "Rounded up to the nearest yard" },
+        { label: `Weight (${gravel.label}, ~${gravel.lbPerCubicYd} lb/yd³)`, value: `${estimatedTons.toFixed(2)} tons` },
+        { label: `Cost (${estimatedTons.toFixed(2)} tons × $${pricePerTon.toFixed(2)}/ton)`, value: `$${totalCost.toFixed(2)}` },
       ],
-      conversion: `= ${volumeCubicM.toFixed(2)} m³`,
+      conversion: `Volume = ${volumeCubicM.toFixed(2)} m³`,
     };
   },
   methodology:
-    "Volume is calculated as length × width × depth, converted from cubic feet to cubic yards (27 ft³ per yd³). Weight assumes standard crushed gravel at approximately 2,800 lb per cubic yard — actual density varies by material type and compaction. We add your selected waste percentage to cover uneven ground, spillage, and compaction, then round up to the nearest full yard since most suppliers sell by the yard.",
+    "Volume is calculated as length × width × depth, converted from cubic feet to cubic yards (27 ft³ per yd³), then rounded up to the nearest full yard since most suppliers sell by the yard. Weight is estimated using the selected gravel type's typical density — crushed stone, pea gravel, limestone, river rock, and decomposed granite all pack differently, from about 2,600 to 2,800 lb per cubic yard. Total cost multiplies the estimated tons by your entered price per ton. We add your selected waste percentage to the volume to cover uneven ground, spillage, and compaction before converting to weight and cost.",
   example:
-    "A 20 ft × 10 ft driveway at 4 in deep needs 2.47 yd³ of gravel. With 10% waste that's 2.72 yd³, so order 3 yd³ — about 4.2 tons.",
+    "A 20 ft × 10 ft driveway at 4 in deep needs 2.47 yd³ of gravel. With 10% waste that's 2.72 yd³, so order 3 yd³ of crushed stone — about 3.9 tons. At $55/ton, that's roughly $214.50.",
   faqs: [
     {
       question: "How deep should a gravel driveway be?",
@@ -66,19 +99,19 @@ export const gravelCalculator: CalculatorConfig = {
         "Most residential gravel driveways use 4–6 inches of gravel over a compacted base. Heavier vehicle traffic or soft soil may need 8–12 inches across multiple layers.",
     },
     {
+      question: "How much does a ton of gravel cost?",
+      answer:
+        "Gravel typically costs $15–$75 per ton depending on type, region, and delivery distance. Crushed stone and recycled materials tend to be cheaper; decorative gravel like river rock or decomposed granite costs more.",
+    },
+    {
       question: "How much does a cubic yard of gravel weigh?",
       answer:
-        "Roughly 2,700–2,900 lb (about 1.35–1.45 tons), depending on the gravel type and how compacted it is.",
+        "Roughly 2,600–2,800 lb (about 1.3–1.4 tons), depending on the gravel type and how compacted it is. This calculator adjusts the weight estimate based on the gravel type you select.",
     },
     {
-      question: "Why does the calculator round up my order?",
+      question: "Should I buy gravel by the ton or by the cubic yard?",
       answer:
-        "Suppliers typically sell gravel by the full or half cubic yard, and a small buffer covers uneven sub-grade and settling after delivery.",
-    },
-    {
-      question: "Does this work for other materials like sand or crushed stone?",
-      answer:
-        "The volume math is the same, but weight estimates assume standard gravel density. For sand or crushed stone, treat the weight figure as approximate.",
+        "Suppliers sell both ways — cubic yards describe volume, tons describe weight. This calculator gives you both, plus the total cost, so you can compare supplier pricing however it's quoted.",
     },
     {
       question: "Should I subtract the area under structures like a shed?",
@@ -91,4 +124,5 @@ export const gravelCalculator: CalculatorConfig = {
     { slug: "topsoil-calculator", title: "Topsoil Calculator" },
     { slug: "paver-calculator", title: "Paver Calculator" },
   ],
+  relatedGuides: [{ href: "/guides/gravel-driveway", title: "How much gravel for a driveway" }],
 };

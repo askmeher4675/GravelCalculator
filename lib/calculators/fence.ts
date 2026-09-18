@@ -6,6 +6,8 @@ export const fenceCalculator: CalculatorConfig = {
   category: "Fencing",
   intro:
     "Estimate how many posts, rails, and pickets you need for a fence based on its total length and post spacing.",
+  metaDescription:
+    "Fence calculator for wood, vinyl, and chain-link fences. Enter total length and post spacing to get the number of posts and rails you need.",
   fields: [
     { key: "length", label: "Fence length", unit: "ft", type: "number", placeholder: "150", min: 0, step: 1 },
     {
@@ -31,6 +33,7 @@ export const fenceCalculator: CalculatorConfig = {
   ],
   wastePercentOptions: [5, 10],
   wastePercentDefault: 5,
+  wasteHelperText: "Covers cutting waste and damaged rail pieces. 5% works for most standard runs.",
   calculate: (inputs, wastePercent) => {
     const { length, postSpacing, railsPerSection } = inputs;
     const sections = Math.ceil(length / postSpacing);

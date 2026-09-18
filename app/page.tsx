@@ -1,26 +1,24 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { GuideCard } from "@/components/content/GuideCard";
+import { CalculatorShell } from "@/components/calculator/CalculatorShell";
+import { InfoCallout } from "@/components/content/InfoCallout";
+import { calculators } from "@/lib/calculators";
 
-const POPULAR = [
-  { title: "Gravel Calculator", slug: "gravel-calculator" },
-  { title: "Concrete Calculator", slug: "concrete-calculator" },
-  { title: "Mulch Calculator", slug: "mulch-calculator" },
-  { title: "Topsoil Calculator", slug: "topsoil-calculator" },
-];
+export const metadata: Metadata = {
+  title: "Gravel Calculator - Estimate Gravel Cost, Tons & Yards",
+  description:
+    "Free gravel cost calculator: enter your area, gravel type, and price per ton to estimate cubic yards, tons, and total cost for your driveway or landscaping project.",
+};
 
-const CATEGORIES = [
-  "Landscaping",
-  "Concrete & Masonry",
-  "Lawn & Garden",
-  "Fencing",
-  "Painting",
-  "Decks & Outdoor Projects",
-];
+const OTHER_CALCULATORS = Object.values(calculators).filter((c) => c.slug !== "gravel-calculator");
 
 export default function Home() {
+  const gravel = calculators["gravel-calculator"];
+
   return (
     <>
       <Header />
@@ -31,28 +29,32 @@ export default function Home() {
         >
           <PageContainer>
             <div className="mx-auto max-w-[680px] text-center">
-              <h1 style={{ color: "var(--color-on-primary)" }}>Home Project Calculators</h1>
+              <h1 style={{ color: "var(--color-on-primary)" }}>Gravel Calculator</h1>
               <p
                 className="mt-3 text-[16px]"
                 style={{ color: "color-mix(in srgb, var(--color-on-primary) 85%, transparent)" }}
               >
-                Calculate the materials and quantities you need for your next home improvement project.
+                {gravel.intro}
               </p>
-              <div className="mt-6">
-                <input
-                  type="search"
-                  placeholder="Search calculators (e.g. gravel, concrete, fence)"
-                  className="h-12 w-full rounded-lg border-0 bg-surface px-4 text-[16px] text-text-primary shadow-[var(--shadow-lg)] outline-none focus-visible:ring-2 focus-visible:ring-secondary"
-                />
-              </div>
             </div>
           </PageContainer>
         </div>
+
         <PageContainer>
-          <section className="mt-12 md:mt-16">
-            <h2>Popular calculators</h2>
+          <section className="mt-8 md:mt-10 mx-auto max-w-[680px]">
+            <CalculatorShell slug="gravel-calculator" />
+            <div className="mt-4">
+              <InfoCallout>{gravel.example}</InfoCallout>
+            </div>
+          </section>
+
+          <section className="mt-16">
+            <h2>Other project calculators</h2>
+            <p className="mt-2 text-[16px] text-text-secondary">
+              Need materials for a different project? These calculators use the same simple approach.
+            </p>
             <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4">
-              {POPULAR.map((c) => (
+              {OTHER_CALCULATORS.map((c) => (
                 <Link
                   key={c.slug}
                   href={`/calculators/${c.slug}`}
@@ -62,33 +64,23 @@ export default function Home() {
                 </Link>
               ))}
             </div>
-          </section>
-
-          <section className="mt-16">
-            <h2>Calculator categories</h2>
-            <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
-              {CATEGORIES.map((cat) => (
-                <Link
-                  key={cat}
-                  href="/calculators"
-                  className="rounded-lg border border-border bg-surface p-5 text-[16px] font-medium text-text-secondary shadow-[var(--shadow-sm)] transition-all duration-200 hover:-translate-y-0.5 hover:border-primary hover:text-primary hover:shadow-[var(--shadow-md)] motion-reduce:transition-none motion-reduce:hover:translate-y-0"
-                >
-                  {cat}
-                </Link>
-              ))}
+            <div className="mt-4">
+              <Link href="/calculators" className="text-[15px] font-medium text-primary hover:underline">
+                View all calculators →
+              </Link>
             </div>
           </section>
 
           <section className="mt-16 mx-auto max-w-[680px]">
-            <h2>How our calculators work</h2>
+            <h2>How the gravel calculator works</h2>
             <ol className="mt-4 space-y-4">
               <li className="flex gap-4">
                 <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary font-mono text-[15px] font-bold text-on-primary">1</span>
-                <p className="text-[16px] text-text-secondary">Enter your measurements in feet, inches, or yards — whatever fits the project.</p>
+                <p className="text-[16px] text-text-secondary">Enter your area&apos;s length, width, and depth, plus your gravel type and price per ton.</p>
               </li>
               <li className="flex gap-4">
                 <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary font-mono text-[15px] font-bold text-on-primary">2</span>
-                <p className="text-[16px] text-text-secondary">Get an instant result with the material quantity you need.</p>
+                <p className="text-[16px] text-text-secondary">Get an instant estimate of cubic yards, tons, and total cost.</p>
               </li>
               <li className="flex gap-4">
                 <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary font-mono text-[15px] font-bold text-on-primary">3</span>
