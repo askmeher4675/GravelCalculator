@@ -29,7 +29,7 @@ export default function Home() {
         >
           <PageContainer>
             <div className="mx-auto max-w-[680px] text-center">
-              <h1 style={{ color: "var(--color-on-primary)" }}>Gravel Calculator</h1>
+              <h1 style={{ color: "var(--color-on-primary)" }}>Gravel Calculator — Tons, Cubic Yards &amp; Cost</h1>
               <p
                 className="mt-3 text-[16px]"
                 style={{ color: "color-mix(in srgb, var(--color-on-primary) 85%, transparent)" }}

@@ -65,7 +65,7 @@ export const paintCalculator: CalculatorConfig = {
   methodology:
     "Wall area is calculated as total wall length × height. This calculator does not automatically subtract doors and windows, so for more precision subtract roughly 20 ft² per standard door and 15 ft² per standard window from your wall length × height total. That area is multiplied by the number of coats, then divided by standard paint coverage of 350 ft² per gallon (actual coverage varies by paint brand, sheen, and surface texture). We add your selected waste percentage for cutting-in, touch-ups, and uneven surfaces, then round up to the nearest quart.",
   example:
-    "A room with 60 ft of wall length at 8 ft high has 480 ft² of wall area. For 2 coats with 10% waste, that's 1,056 ft², needing about 3.02 gallons — round up to 3 gallons.",
+    "A room with 60 ft of wall length at 8 ft high has 480 ft² of wall area. For 2 coats with 10% waste, that's 1,056 ft², needing about 3.02 gallons — round up to 3.25 gallons (the nearest quart).",
   faqs: [
     {
       question: "How much wall area does a gallon of paint cover?",
