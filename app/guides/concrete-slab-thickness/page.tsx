@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { ArticleJsonLd } from "@/components/seo/ArticleJsonLd";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { PageContainer } from "@/components/layout/PageContainer";
@@ -7,6 +8,7 @@ import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { InfoCallout } from "@/components/content/InfoCallout";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/guides/concrete-slab-thickness" },
   title: "Concrete Slab Thickness Guide",
   description: "How thick a concrete slab should be for patios, walkways, driveways, and footings.",
 };
@@ -14,6 +16,7 @@ export const metadata: Metadata = {
 export default function ConcreteSlabThicknessGuidePage() {
   return (
     <>
+      <ArticleJsonLd title="Concrete Slab Thickness Guide" description="How thick a concrete slab should be for patios, walkways, driveways, and footings." path="/guides/concrete-slab-thickness" />
       <Header />
       <main className="flex-1 py-8 md:py-12">
         <PageContainer>

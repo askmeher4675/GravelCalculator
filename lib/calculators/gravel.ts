@@ -254,5 +254,10 @@ export const gravelCalculator: CalculatorConfig = {
     { slug: "topsoil-calculator", title: "Topsoil Calculator" },
     { slug: "paver-calculator", title: "Paver Calculator" },
   ],
-  relatedGuides: [{ href: "/guides/gravel-driveway", title: "How much gravel for a driveway" }],
+  relatedGuides: [
+    { href: "/guides/gravel-driveway", title: "How much gravel for a driveway" },
+    { href: "/guides/gravel-cost-per-ton", title: "How much does gravel cost?" },
+    { href: "/guides/gravel-coverage-chart", title: "Gravel coverage chart" },
+    { href: "/guides/gravel-types-and-sizes", title: "Types of gravel and sizes" },
+  ],
 };

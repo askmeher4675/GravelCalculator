@@ -9,6 +9,7 @@ import { InfoCallout } from "@/components/content/InfoCallout";
 import { calculators } from "@/lib/calculators";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/" },
   title: "Gravel Calculator - Estimate Gravel Cost, Tons & Yards",
   description:
     "Free gravel cost calculator: enter your area, gravel type, and price per ton to estimate cubic yards, tons, and total cost for your driveway or landscaping project.",

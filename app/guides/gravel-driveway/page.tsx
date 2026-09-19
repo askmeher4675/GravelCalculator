@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { ArticleJsonLd } from "@/components/seo/ArticleJsonLd";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { PageContainer } from "@/components/layout/PageContainer";
@@ -7,6 +8,7 @@ import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { InfoCallout } from "@/components/content/InfoCallout";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/guides/gravel-driveway" },
   title: "How Much Gravel for a Driveway",
   description:
     "How deep and how much gravel a driveway needs, by size and traffic type, plus how to estimate total cost.",
@@ -15,6 +17,7 @@ export const metadata: Metadata = {
 export default function GravelDrivewayGuidePage() {
   return (
     <>
+      <ArticleJsonLd title="How Much Gravel for a Driveway" description="How deep and how much gravel a driveway needs, by size and traffic type, plus how to estimate total cost." path="/guides/gravel-driveway" />
       <Header />
       <main className="flex-1 py-8 md:py-12">
         <PageContainer>

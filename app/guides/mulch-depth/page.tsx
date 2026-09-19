@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { ArticleJsonLd } from "@/components/seo/ArticleJsonLd";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { PageContainer } from "@/components/layout/PageContainer";
@@ -7,6 +8,7 @@ import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { InfoCallout } from "@/components/content/InfoCallout";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/guides/mulch-depth" },
   title: "Mulch Depth by Plant Type",
   description: "How deep to mulch garden beds, tree rings, and vegetable gardens for healthy plants.",
 };
@@ -14,6 +16,7 @@ export const metadata: Metadata = {
 export default function MulchDepthGuidePage() {
   return (
     <>
+      <ArticleJsonLd title="Mulch Depth by Plant Type" description="How deep to mulch garden beds, tree rings, and vegetable gardens for healthy plants." path="/guides/mulch-depth" />
       <Header />
       <main className="flex-1 py-8 md:py-12">
         <PageContainer>

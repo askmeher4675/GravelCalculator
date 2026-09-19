@@ -6,6 +6,7 @@ import { PageContainer } from "@/components/layout/PageContainer";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/disclaimer" },
   title: "Disclaimer",
   description: "Why Gravel Cost Calculator's results are planning estimates, not final order quantities or professional advice.",
 };

@@ -7,6 +7,7 @@ import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { calculators } from "@/lib/calculators";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/methodology" },
   title: "Methodology",
   description:
     "How each calculator works: the formulas, density assumptions, and waste factors behind every material estimate.",
