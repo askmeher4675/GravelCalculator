@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import Link from "next/link";
 import { GuideArticle, DataTable } from "@/components/content/GuideArticle";
 
@@ -7,12 +8,12 @@ const TITLE = "Types of Gravel and Sizes: Which Should You Use?";
 const DESCRIPTION =
   "Compare crushed stone, pea gravel, crusher run, river rock and decomposed granite: typical sizes, best uses, and how to choose for a driveway, path or drainage.";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
+  path: PATH,
   title: { absolute: TITLE },
   description: DESCRIPTION,
-  alternates: { canonical: PATH },
-  openGraph: { url: PATH, title: TITLE, description: DESCRIPTION, images: ["/opengraph-image"] },
-};
+  article: true,
+});
 
 const ROWS = [
   ["Crushed stone (#57)", "About 3/4 in", "Driveways, drainage, base layers", "Angular, locks together when compacted"],

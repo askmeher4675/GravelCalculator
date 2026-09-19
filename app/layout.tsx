@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Inter, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { SITE_NAME, SITE_URL } from "@/lib/site";
+import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -56,6 +56,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
                 "@id": `${SITE_URL}/#website`,
                 url: SITE_URL,
                 name: SITE_NAME,
+                description: SITE_DESCRIPTION,
+                inLanguage: "en-US",
                 publisher: { "@id": `${SITE_URL}/#organization` },
               },
               {
@@ -63,6 +65,19 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
                 "@id": `${SITE_URL}/#organization`,
                 name: SITE_NAME,
                 url: SITE_URL,
+                description: SITE_DESCRIPTION,
+                logo: {
+                  "@type": "ImageObject",
+                  url: `${SITE_URL}/opengraph-image`,
+                  width: 1200,
+                  height: 630,
+                },
+                contactPoint: {
+                  "@type": "ContactPoint",
+                  contactType: "customer support",
+                  url: `${SITE_URL}/contact`,
+                  availableLanguage: "English",
+                },
               },
             ],
           }}

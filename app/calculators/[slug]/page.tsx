@@ -11,6 +11,7 @@ import { FAQAccordion } from "@/components/content/FAQAccordion";
 import { RelatedCalculators } from "@/components/content/RelatedCalculators";
 import { calculators } from "@/lib/calculators";
 import { JsonLd } from "@/components/seo/JsonLd";
+import { pageMetadata } from "@/lib/seo";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
 
 export function generateStaticParams() {
@@ -26,21 +27,15 @@ export async function generateMetadata({
   const config = calculators[slug];
   if (!config) return {};
   const path = `/calculators/${slug}`;
-  return {
+  return pageMetadata({
+    path,
     // The gravel calculator is the flagship page: skip the site-name suffix (it would repeat "Gravel").
     title:
       slug === "gravel-calculator"
         ? { absolute: "Gravel Calculator: Cost, Tons & Cubic Yards" }
         : `${config.title} - Free Online Estimator`,
     description: config.metaDescription,
-    alternates: { canonical: path },
-    openGraph: {
-      url: path,
-      title: config.title,
-      description: config.metaDescription,
-      images: ["/opengraph-image"],
-    },
-  };
+  });
 }
 
 export default async function CalculatorPage({

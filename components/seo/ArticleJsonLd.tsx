@@ -1,5 +1,5 @@
 import { JsonLd } from "./JsonLd";
-import { CONTENT_UPDATED, SITE_NAME, SITE_URL } from "@/lib/site";
+import { SITE_URL, pageDates } from "@/lib/site";
 
 export function ArticleJsonLd({
   title,
@@ -10,6 +10,8 @@ export function ArticleJsonLd({
   description: string;
   path: string;
 }) {
+  const { published, modified } = pageDates(path);
+  const url = `${SITE_URL}${path}`;
   return (
     <JsonLd
       data={{
@@ -17,10 +19,15 @@ export function ArticleJsonLd({
         "@type": "Article",
         headline: title,
         description,
-        mainEntityOfPage: `${SITE_URL}${path}`,
-        dateModified: CONTENT_UPDATED,
-        author: { "@type": "Organization", name: SITE_NAME, url: SITE_URL },
-        publisher: { "@type": "Organization", name: SITE_NAME, url: SITE_URL },
+        url,
+        mainEntityOfPage: { "@type": "WebPage", "@id": url },
+        image: `${SITE_URL}/opengraph-image`,
+        datePublished: published,
+        dateModified: modified,
+        inLanguage: "en-US",
+        author: { "@id": `${SITE_URL}/#organization` },
+        publisher: { "@id": `${SITE_URL}/#organization` },
+        isPartOf: { "@id": `${SITE_URL}/#website` },
       }}
     />
   );

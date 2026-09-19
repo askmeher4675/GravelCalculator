@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import Link from "next/link";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
@@ -6,12 +7,11 @@ import { PageContainer } from "@/components/layout/PageContainer";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { calculators } from "@/lib/calculators";
 
-export const metadata: Metadata = {
-  alternates: { canonical: "/methodology" },
+export const metadata: Metadata = pageMetadata({
+  path: "/methodology",
   title: "Methodology",
-  description:
-    "How each calculator works: the formulas, density assumptions, and waste factors behind every material estimate.",
-};
+  description: "How each calculator works: the formulas, density assumptions, and waste factors behind every material estimate.",
+});
 
 export default function MethodologyPage() {
   return (
@@ -26,7 +26,7 @@ export default function MethodologyPage() {
               Every calculator on this site follows the same core approach: convert your measurements into a
               volume or count, add a waste percentage for real-world conditions, then round to how suppliers
               actually sell the material. The specifics — density, waste factors, unit conversions — vary by
-              material, so each calculator's page shows its own breakdown alongside the result.
+              material, so each calculator&apos;s page shows its own breakdown alongside the result.
             </p>
             <p className="mt-4 text-[16px] text-text-secondary">
               Material weights (used to convert volume to tons) are typical industry averages. Actual density

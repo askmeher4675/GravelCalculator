@@ -1,16 +1,16 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { GuideCard } from "@/components/content/GuideCard";
 
-export const metadata: Metadata = {
-  alternates: { canonical: "/guides" },
+export const metadata: Metadata = pageMetadata({
+  path: "/guides",
   title: "Guides",
-  description:
-    "Practical reference guides for planning home projects: gravel driveway depth, gravel cost, coverage and types, concrete slab thickness, and mulch depth.",
-};
+  description: "Practical reference guides for planning home projects: gravel driveway depth, gravel cost, coverage and types, concrete slab thickness, and mulch depth.",
+});
 
 export default function GuidesIndexPage() {
   return (

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import Link from "next/link";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
@@ -8,12 +9,11 @@ import { CalculatorShell } from "@/components/calculator/CalculatorShell";
 import { InfoCallout } from "@/components/content/InfoCallout";
 import { calculators } from "@/lib/calculators";
 
-export const metadata: Metadata = {
-  alternates: { canonical: "/" },
-  title: "Gravel Calculator - Estimate Gravel Cost, Tons & Yards",
-  description:
-    "Free gravel cost calculator: enter your area, gravel type, and price per ton to estimate cubic yards, tons, and total cost for your driveway or landscaping project.",
-};
+export const metadata: Metadata = pageMetadata({
+  path: "",
+  title: { absolute: "Gravel Calculator - Estimate Gravel Cost, Tons & Yards" },
+  description: "Free gravel cost calculator: enter your area, gravel type, and price per ton to estimate cubic yards, tons, and total cost for your driveway or landscaping project.",
+});
 
 const OTHER_CALCULATORS = Object.values(calculators).filter((c) => c.slug !== "gravel-calculator");
 

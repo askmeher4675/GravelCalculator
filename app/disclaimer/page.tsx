@@ -1,15 +1,16 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import Link from "next/link";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 
-export const metadata: Metadata = {
-  alternates: { canonical: "/disclaimer" },
+export const metadata: Metadata = pageMetadata({
+  path: "/disclaimer",
   title: "Disclaimer",
   description: "Why Gravel Cost Calculator's results are planning estimates, not final order quantities or professional advice.",
-};
+});
 
 export default function DisclaimerPage() {
   return (
