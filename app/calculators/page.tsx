@@ -7,6 +7,7 @@ import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { calculators } from "@/lib/calculators";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/calculators" },
   title: "All Calculators",
   description:
     "Browse every material calculator: gravel, concrete, mulch, topsoil, pavers, sod, fencing, paint, decking, and driveways.",

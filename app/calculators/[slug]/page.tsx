@@ -10,6 +10,8 @@ import { InfoCallout } from "@/components/content/InfoCallout";
 import { FAQAccordion } from "@/components/content/FAQAccordion";
 import { RelatedCalculators } from "@/components/content/RelatedCalculators";
 import { calculators } from "@/lib/calculators";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { SITE_NAME, SITE_URL } from "@/lib/site";
 
 export function generateStaticParams() {
   return Object.keys(calculators).map((slug) => ({ slug }));
@@ -23,9 +25,21 @@ export async function generateMetadata({
   const { slug } = await params;
   const config = calculators[slug];
   if (!config) return {};
+  const path = `/calculators/${slug}`;
   return {
-    title: `${config.title} - ${config.category}`,
+    // The gravel calculator is the flagship page: skip the site-name suffix (it would repeat "Gravel").
+    title:
+      slug === "gravel-calculator"
+        ? { absolute: "Gravel Calculator: Cost, Tons & Cubic Yards" }
+        : `${config.title} - Free Online Estimator`,
     description: config.metaDescription,
+    alternates: { canonical: path },
+    openGraph: {
+      url: path,
+      title: config.title,
+      description: config.metaDescription,
+      images: ["/opengraph-image"],
+    },
   };
 }
 
@@ -48,8 +62,23 @@ export default async function CalculatorPage({
     })),
   };
 
+  const appJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: config.title,
+    url: `${SITE_URL}/calculators/${slug}`,
+    description: config.metaDescription,
+    applicationCategory: "UtilitiesApplication",
+    operatingSystem: "Any",
+    browserRequirements: "Requires JavaScript",
+    isAccessibleForFree: true,
+    offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+    publisher: { "@type": "Organization", name: SITE_NAME, url: SITE_URL },
+  };
+
   return (
     <>
+      <JsonLd data={appJsonLd} />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
