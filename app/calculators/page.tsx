@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import Link from "next/link";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
@@ -6,12 +7,11 @@ import { PageContainer } from "@/components/layout/PageContainer";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { calculators } from "@/lib/calculators";
 
-export const metadata: Metadata = {
-  alternates: { canonical: "/calculators" },
+export const metadata: Metadata = pageMetadata({
+  path: "/calculators",
   title: "All Calculators",
-  description:
-    "Browse every material calculator: gravel, concrete, mulch, topsoil, pavers, sod, fencing, paint, decking, and driveways.",
-};
+  description: "Browse every material calculator: gravel, concrete, mulch, topsoil, pavers, sod, fencing, paint, decking, and driveways.",
+});
 
 export default function CalculatorsIndexPage() {
   const byCategory = new Map<string, typeof calculators[string][]>();

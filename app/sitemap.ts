@@ -1,8 +1,6 @@
 import type { MetadataRoute } from "next";
 import { calculators } from "@/lib/calculators";
-import { CONTENT_UPDATED, SITE_URL } from "@/lib/site";
-
-const LAST_MODIFIED = new Date(CONTENT_UPDATED);
+import { pageDates, SITE_URL } from "@/lib/site";
 
 const STATIC_ROUTES = [
   "",
@@ -25,13 +23,13 @@ const STATIC_ROUTES = [
 export default function sitemap(): MetadataRoute.Sitemap {
   const staticEntries = STATIC_ROUTES.map((route) => ({
     url: `${SITE_URL}${route}`,
-    lastModified: LAST_MODIFIED,
+    lastModified: new Date(pageDates(route).modified),
     priority: route === "" ? 1 : 0.7,
   }));
 
   const calculatorEntries = Object.keys(calculators).map((slug) => ({
     url: `${SITE_URL}/calculators/${slug}`,
-    lastModified: LAST_MODIFIED,
+    lastModified: new Date(pageDates(`/calculators/${slug}`).modified),
     priority: slug === "gravel-calculator" ? 0.9 : 0.8,
   }));
 

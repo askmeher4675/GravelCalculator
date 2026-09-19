@@ -1,15 +1,16 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import Link from "next/link";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 
-export const metadata: Metadata = {
-  alternates: { canonical: "/contact" },
+export const metadata: Metadata = pageMetadata({
+  path: "/contact",
   title: "Contact",
   description: "Questions about how a calculator works? Start with the FAQ and methodology pages.",
-};
+});
 
 export default function ContactPage() {
   return (

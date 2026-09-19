@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import Link from "next/link";
 import { GuideArticle, DataTable } from "@/components/content/GuideArticle";
 import { InfoCallout } from "@/components/content/InfoCallout";
@@ -8,12 +9,12 @@ const TITLE = "How Much Does Gravel Cost? Per Ton and Per Cubic Yard";
 const DESCRIPTION =
   "What drives gravel prices, how to convert price per ton to price per cubic yard, and how to estimate the total cost of a gravel project including delivery.";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
+  path: PATH,
   title: { absolute: TITLE },
   description: DESCRIPTION,
-  alternates: { canonical: PATH },
-  openGraph: { url: PATH, title: TITLE, description: DESCRIPTION, images: ["/opengraph-image"] },
-};
+  article: true,
+});
 
 // Crushed stone runs about 1.3 tons per cubic yard (2,600 lb/yd³); pea gravel/DG about 1.4.
 const TON_PRICES = [20, 30, 40, 50, 60, 75];

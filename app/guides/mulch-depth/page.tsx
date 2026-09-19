@@ -1,17 +1,20 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import Link from "next/link";
 import { ArticleJsonLd } from "@/components/seo/ArticleJsonLd";
+import { LastUpdated } from "@/components/content/LastUpdated";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { InfoCallout } from "@/components/content/InfoCallout";
 
-export const metadata: Metadata = {
-  alternates: { canonical: "/guides/mulch-depth" },
+export const metadata: Metadata = pageMetadata({
+  path: "/guides/mulch-depth",
   title: "Mulch Depth by Plant Type",
   description: "How deep to mulch garden beds, tree rings, and vegetable gardens for healthy plants.",
-};
+  article: true,
+});
 
 export default function MulchDepthGuidePage() {
   return (
@@ -25,6 +28,7 @@ export default function MulchDepthGuidePage() {
               items={[{ label: "Home", href: "/" }, { label: "Guides", href: "/guides" }, { label: "Mulch Depth" }]}
             />
             <h1>Mulch Depth by Plant Type</h1>
+            <LastUpdated path="/guides/mulch-depth" />
             <p className="mt-3 text-[16px] text-text-secondary">
               The right mulch depth depends on what&apos;s planted. Too little mulch does little to suppress
               weeds or hold moisture; too much can suffocate roots and trap moisture against stems and trunks.

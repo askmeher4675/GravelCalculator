@@ -3,6 +3,7 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
+import { LastUpdated } from "@/components/content/LastUpdated";
 import { ArticleJsonLd } from "@/components/seo/ArticleJsonLd";
 
 export function GuideArticle({
@@ -31,6 +32,7 @@ export function GuideArticle({
               items={[{ label: "Home", href: "/" }, { label: "Guides", href: "/guides" }, { label: breadcrumb }]}
             />
             <h1>{title}</h1>
+            <LastUpdated path={path} />
             <p className="mt-3 text-[16px] text-text-secondary">{intro}</p>
             {children}
           </div>

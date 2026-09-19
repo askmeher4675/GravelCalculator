@@ -1,18 +1,20 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import Link from "next/link";
 import { ArticleJsonLd } from "@/components/seo/ArticleJsonLd";
+import { LastUpdated } from "@/components/content/LastUpdated";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { InfoCallout } from "@/components/content/InfoCallout";
 
-export const metadata: Metadata = {
-  alternates: { canonical: "/guides/gravel-driveway" },
+export const metadata: Metadata = pageMetadata({
+  path: "/guides/gravel-driveway",
   title: "How Much Gravel for a Driveway",
-  description:
-    "How deep and how much gravel a driveway needs, by size and traffic type, plus how to estimate total cost.",
-};
+  description: "How deep and how much gravel a driveway needs, by size and traffic type, plus how to estimate total cost.",
+  article: true,
+});
 
 export default function GravelDrivewayGuidePage() {
   return (
@@ -26,6 +28,7 @@ export default function GravelDrivewayGuidePage() {
               items={[{ label: "Home", href: "/" }, { label: "Guides", href: "/guides" }, { label: "Gravel Driveway" }]}
             />
             <h1>How Much Gravel for a Driveway</h1>
+            <LastUpdated path="/guides/gravel-driveway" />
             <p className="mt-3 text-[16px] text-text-secondary">
               Gravel driveways are typically built in two layers — a compacted base for structure and a
               finer top layer for a smooth driving surface. How much gravel you need depends on the

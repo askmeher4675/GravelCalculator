@@ -1,17 +1,20 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import Link from "next/link";
 import { ArticleJsonLd } from "@/components/seo/ArticleJsonLd";
+import { LastUpdated } from "@/components/content/LastUpdated";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { InfoCallout } from "@/components/content/InfoCallout";
 
-export const metadata: Metadata = {
-  alternates: { canonical: "/guides/concrete-slab-thickness" },
+export const metadata: Metadata = pageMetadata({
+  path: "/guides/concrete-slab-thickness",
   title: "Concrete Slab Thickness Guide",
   description: "How thick a concrete slab should be for patios, walkways, driveways, and footings.",
-};
+  article: true,
+});
 
 export default function ConcreteSlabThicknessGuidePage() {
   return (
@@ -25,6 +28,7 @@ export default function ConcreteSlabThicknessGuidePage() {
               items={[{ label: "Home", href: "/" }, { label: "Guides", href: "/guides" }, { label: "Concrete Slab Thickness" }]}
             />
             <h1>Concrete Slab Thickness Guide</h1>
+            <LastUpdated path="/guides/concrete-slab-thickness" />
             <p className="mt-3 text-[16px] text-text-secondary">
               Slab thickness depends on what will sit or drive on it. A thicker slab costs more but resists
               cracking under load — going thinner than recommended is the most common reason residential

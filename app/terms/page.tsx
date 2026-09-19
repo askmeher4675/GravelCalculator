@@ -1,15 +1,16 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import Link from "next/link";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 
-export const metadata: Metadata = {
-  alternates: { canonical: "/terms" },
+export const metadata: Metadata = pageMetadata({
+  path: "/terms",
   title: "Terms of Use",
   description: "The terms for using Gravel Cost Calculator's free material and cost calculators.",
-};
+});
 
 export default function TermsPage() {
   return (

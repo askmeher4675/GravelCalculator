@@ -1,15 +1,16 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import Link from "next/link";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 
-export const metadata: Metadata = {
-  alternates: { canonical: "/privacy" },
+export const metadata: Metadata = pageMetadata({
+  path: "/privacy",
   title: "Privacy Policy",
   description: "How Gravel Cost Calculator handles data — we don't collect the numbers you enter into any calculator.",
-};
+});
 
 export default function PrivacyPage() {
   return (

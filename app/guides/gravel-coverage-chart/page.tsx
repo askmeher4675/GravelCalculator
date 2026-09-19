@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import Link from "next/link";
 import { GuideArticle, DataTable } from "@/components/content/GuideArticle";
 import { InfoCallout } from "@/components/content/InfoCallout";
@@ -8,12 +9,12 @@ const TITLE = "Gravel Coverage Chart: Square Feet per Ton & Cubic Yard";
 const DESCRIPTION =
   "How many square feet a cubic yard or ton of gravel covers at each depth, plus weight per cubic yard by gravel type. Includes worked examples.";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
+  path: PATH,
   title: { absolute: TITLE },
   description: DESCRIPTION,
-  alternates: { canonical: PATH },
-  openGraph: { url: PATH, title: TITLE, description: DESCRIPTION, images: ["/opengraph-image"] },
-};
+  article: true,
+});
 
 const SQFT_PER_YD3_AT_1IN = 324; // 27 ft³ / (1/12 ft)
 const DEPTHS = [1, 2, 3, 4, 6, 8, 12];
