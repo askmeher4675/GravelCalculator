@@ -17,9 +17,6 @@ import {
   TargetIcon,
   UsersIcon,
   ArrowRightIcon,
-  CalculatorIcon,
-  RoadIcon,
-  LayersIcon,
 } from "@/components/icons/Icons";
 
 export const metadata: Metadata = pageMetadata({
@@ -49,6 +46,15 @@ const POPULAR_SLUGS = [
   "paver-calculator",
   "topsoil-calculator",
 ];
+
+const CALCULATOR_IMAGES: Record<string, string> = {
+  "gravel-calculator": "/calc-gravel.webp",
+  "driveway-calculator": "/calc-driveway.webp",
+  "concrete-calculator": "/calc-concrete.webp",
+  "mulch-calculator": "/calc-mulch.webp",
+  "paver-calculator": "/calc-paver.webp",
+  "topsoil-calculator": "/calc-topsoil.webp",
+};
 
 const HERO_BADGES = [
   { icon: CalcIcon, label: "Accurate Calculations" },
@@ -220,23 +226,29 @@ export default function Home() {
                   <Link
                     key={c.slug}
                     href={`/calculators/${c.slug}`}
-                    className={`group block overflow-hidden rounded-xl border bg-surface shadow-[var(--shadow-sm)] transition-all duration-200 hover:-translate-y-0.5 hover:border-primary hover:shadow-[var(--shadow-md)] motion-reduce:transition-none motion-reduce:hover:translate-y-0 ${
-                      isActive ? "border-primary ring-1 ring-primary" : "border-border"
+                    className={`group relative block h-64 overflow-hidden rounded-xl shadow-[var(--shadow-sm)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[var(--shadow-md)] motion-reduce:transition-none motion-reduce:hover:translate-y-0 ${
+                      isActive ? "ring-2 ring-primary" : ""
                     }`}
                   >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={CALCULATOR_IMAGES[c.slug]}
+                      alt=""
+                      loading="lazy"
+                      decoding="async"
+                      className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    />
                     <div
-                      className="flex h-32 items-center justify-center text-on-primary"
-                      style={{ background: "var(--gradient-hero)" }}
+                      className="absolute inset-0"
+                      style={{ background: "linear-gradient(180deg, rgba(8,28,26,0) 5%, rgba(8,28,26,0.55) 45%, rgba(8,28,26,0.95) 100%)" }}
                       aria-hidden="true"
-                    >
-                      <CalculatorIcon slug={c.slug} className="h-10 w-10 opacity-90" />
-                    </div>
-                    <div className="p-5">
-                      <p className="text-[17px] font-semibold text-text-primary">{c.title}</p>
-                      <p className="mt-1 text-[15px] text-text-secondary">
+                    />
+                    <div className="absolute inset-x-0 bottom-0 p-5" style={{ textShadow: "0 1px 6px rgba(0,0,0,0.5)" }}>
+                      <p className="text-[17px] font-bold text-white">{c.title}</p>
+                      <p className="mt-1 text-[14px] font-medium text-white/95">
                         {CALCULATOR_BLURBS[c.slug] ?? c.intro}
                       </p>
-                      <span className="mt-3 inline-flex items-center gap-1 text-[14px] font-medium text-primary">
+                      <span className="mt-2 inline-flex items-center gap-1 text-[14px] font-semibold text-white">
                         Use Calculator
                         <ArrowRightIcon className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
                       </span>
@@ -282,19 +294,19 @@ export default function Home() {
                 title="How Much Gravel for a Driveway?"
                 description="Depth guidelines, examples and cost estimates."
                 href="/guides/gravel-driveway"
-                icon={<RoadIcon className="h-9 w-9 opacity-90" />}
+                image="/calc-driveway.webp"
               />
               <GuideCard
                 title="Concrete Slab Thickness Guide"
                 description="Find the right thickness for your project."
                 href="/guides/concrete-slab-thickness"
-                icon={<LayersIcon className="h-9 w-9 opacity-90" />}
+                image="/calc-concrete.webp"
               />
               <GuideCard
                 title="Mulch Depth by Plant Type"
                 description="Recommended depths for different plants."
                 href="/guides/mulch-depth"
-                icon={<LeafIcon className="h-9 w-9 opacity-90" />}
+                image="/calc-mulch.webp"
               />
             </div>
             <div className="mt-4 sm:hidden">
