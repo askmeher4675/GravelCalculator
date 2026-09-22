@@ -69,7 +69,7 @@ export function CalculatorShell({ slug }: { slug: string }) {
     <div className="space-y-6">
       <form
         onSubmit={handleSubmit}
-        className="rounded-[8px] border border-border bg-surface p-6 md:p-8"
+        className="rounded-2xl border border-border bg-surface p-6 shadow-[var(--shadow-lg)] md:p-8"
       >
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           {config.fields
@@ -97,7 +97,7 @@ export function CalculatorShell({ slug }: { slug: string }) {
           </div>
         )}
 
-        <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+        <div className="mt-6 flex flex-col gap-3 border-t border-border pt-6 sm:flex-row sm:items-center">
           <CalculateButton />
           <ResetButton onClick={handleReset} />
         </div>
