@@ -29,31 +29,37 @@ export default function GuidesIndexPage() {
                 title="How much gravel for a driveway"
                 description="A quick reference for depth and coverage by driveway size."
                 href="/guides/gravel-driveway"
+                image="/calc-driveway.webp"
               />
               <GuideCard
                 title="How much does gravel cost?"
                 description="Price per ton and per cubic yard, plus delivery and other costs."
                 href="/guides/gravel-cost-per-ton"
+                image="/calc-gravel.webp"
               />
               <GuideCard
                 title="Gravel coverage chart"
                 description="Square feet covered per ton and cubic yard at every depth."
                 href="/guides/gravel-coverage-chart"
+                image="/calc-gravel.webp"
               />
               <GuideCard
                 title="Types of gravel and sizes"
                 description="Crushed stone, pea gravel, crusher run and more, and when to use each."
                 href="/guides/gravel-types-and-sizes"
+                image="/calc-gravel.webp"
               />
               <GuideCard
                 title="Concrete slab thickness guide"
                 description="Choosing the right thickness for patios, walkways, and driveways."
                 href="/guides/concrete-slab-thickness"
+                image="/calc-concrete.webp"
               />
               <GuideCard
                 title="Mulch depth by plant type"
                 description="How much mulch depth different garden beds actually need."
                 href="/guides/mulch-depth"
+                image="/calc-mulch.webp"
               />
             </div>
           </div>
