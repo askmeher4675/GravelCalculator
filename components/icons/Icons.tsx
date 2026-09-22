@@ -152,6 +152,16 @@ export function DollarIcon(props: IconProps) {
   );
 }
 
+export function CartIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <circle cx="9" cy="20" r="1.25" />
+      <circle cx="18" cy="20" r="1.25" />
+      <path d="M2 3h2l2.4 12.2a2 2 0 0 0 2 1.6h8.6a2 2 0 0 0 2-1.6L21 8H6" />
+    </svg>
+  );
+}
+
 export function BagIcon(props: IconProps) {
   return (
     <svg {...base} {...props}>
