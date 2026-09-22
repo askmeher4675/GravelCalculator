@@ -57,6 +57,25 @@ const HERO_BADGES = [
   { icon: LeafIcon, label: "Free & Easy to Use" },
 ];
 
+const HOW_IT_WORKS = [
+  {
+    title: "Enter your measurements",
+    description: "Length, width, and depth, plus your gravel type and price per ton.",
+  },
+  {
+    title: "Get an instant estimate",
+    description: "Cubic yards, tons, and total cost, calculated as you go.",
+  },
+  {
+    title: "See the full breakdown",
+    description: "Every step of the math, so the number is never a black box.",
+  },
+  {
+    title: "Plan with confidence",
+    description: "Buy the right amount the first time, with no guesswork.",
+  },
+];
+
 const TRUST_ITEMS = [
   {
     icon: ShieldIcon,
@@ -195,31 +214,36 @@ export default function Home() {
               </Link>
             </div>
             <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {popular.map((c) => (
-                <Link
-                  key={c.slug}
-                  href={`/calculators/${c.slug}`}
-                  className="group block overflow-hidden rounded-xl border border-border bg-surface shadow-[var(--shadow-sm)] transition-all duration-200 hover:-translate-y-0.5 hover:border-primary hover:shadow-[var(--shadow-md)] motion-reduce:transition-none motion-reduce:hover:translate-y-0"
-                >
-                  <div
-                    className="flex h-32 items-center justify-center text-on-primary"
-                    style={{ background: "var(--gradient-hero)" }}
-                    aria-hidden="true"
+              {popular.map((c) => {
+                const isActive = c.slug === "gravel-calculator";
+                return (
+                  <Link
+                    key={c.slug}
+                    href={`/calculators/${c.slug}`}
+                    className={`group block overflow-hidden rounded-xl border bg-surface shadow-[var(--shadow-sm)] transition-all duration-200 hover:-translate-y-0.5 hover:border-primary hover:shadow-[var(--shadow-md)] motion-reduce:transition-none motion-reduce:hover:translate-y-0 ${
+                      isActive ? "border-primary ring-1 ring-primary" : "border-border"
+                    }`}
                   >
-                    <CalculatorIcon slug={c.slug} className="h-10 w-10 opacity-90" />
-                  </div>
-                  <div className="p-5">
-                    <p className="text-[17px] font-semibold text-text-primary">{c.title}</p>
-                    <p className="mt-1 text-[15px] text-text-secondary">
-                      {CALCULATOR_BLURBS[c.slug] ?? c.intro}
-                    </p>
-                    <span className="mt-3 inline-flex items-center gap-1 text-[14px] font-medium text-primary">
-                      Calculate
-                      <ArrowRightIcon className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
-                    </span>
-                  </div>
-                </Link>
-              ))}
+                    <div
+                      className="flex h-32 items-center justify-center text-on-primary"
+                      style={{ background: "var(--gradient-hero)" }}
+                      aria-hidden="true"
+                    >
+                      <CalculatorIcon slug={c.slug} className="h-10 w-10 opacity-90" />
+                    </div>
+                    <div className="p-5">
+                      <p className="text-[17px] font-semibold text-text-primary">{c.title}</p>
+                      <p className="mt-1 text-[15px] text-text-secondary">
+                        {CALCULATOR_BLURBS[c.slug] ?? c.intro}
+                      </p>
+                      <span className="mt-3 inline-flex items-center gap-1 text-[14px] font-medium text-primary">
+                        Use Calculator
+                        <ArrowRightIcon className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+                      </span>
+                    </div>
+                  </Link>
+                );
+              })}
             </div>
             <div className="mt-4 sm:hidden">
               <Link href="/calculators" className="text-[15px] font-medium text-primary hover:underline">
@@ -229,22 +253,19 @@ export default function Home() {
           </section>
 
           {/* How it works */}
-          <section className="mt-20 mx-auto max-w-[680px]">
+          <section className="mt-20">
             <h2>How the gravel calculator works</h2>
-            <ol className="mt-4 space-y-4">
-              <li className="flex gap-4">
-                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary font-mono text-[15px] font-bold text-on-primary">1</span>
-                <p className="text-[16px] text-text-secondary">Enter your area&apos;s length, width, and depth, plus your gravel type and price per ton.</p>
-              </li>
-              <li className="flex gap-4">
-                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary font-mono text-[15px] font-bold text-on-primary">2</span>
-                <p className="text-[16px] text-text-secondary">Get an instant estimate of cubic yards, tons, and total cost.</p>
-              </li>
-              <li className="flex gap-4">
-                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary font-mono text-[15px] font-bold text-on-primary">3</span>
-                <p className="text-[16px] text-text-secondary">See the full breakdown of the math, so the number is never a black box.</p>
-              </li>
-            </ol>
+            <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+              {HOW_IT_WORKS.map(({ title, description }, i) => (
+                <div key={title}>
+                  <span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary font-mono text-[15px] font-bold text-on-primary">
+                    {i + 1}
+                  </span>
+                  <p className="mt-3 text-[15px] font-semibold text-text-primary">{title}</p>
+                  <p className="mt-1 text-[14px] text-text-secondary">{description}</p>
+                </div>
+              ))}
+            </div>
           </section>
 
           {/* Guides */}

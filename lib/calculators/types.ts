@@ -28,6 +28,7 @@ export interface BreakdownRow {
 export interface SecondaryResultItem {
   label: string;
   value: string;
+  description?: string;
 }
 
 export interface CalculationOutput {

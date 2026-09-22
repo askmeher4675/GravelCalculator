@@ -196,9 +196,9 @@ export const gravelCalculator: CalculatorConfig = {
       primaryUnit: "",
       primaryExplanation: "Estimated total cost for materials (includes waste)",
       secondary: [
-        { label: "Required", value: `${rawVolumeCubicYd.toFixed(2)} yd³` },
-        { label: `With ${wastePercent}% waste`, value: `${wasteAdjustedCubicYd.toFixed(2)} yd³` },
-        { label: "Suggested order", value: `${suggestedOrderYd.toFixed(1)} yd³` },
+        { label: "Required", value: `${rawVolumeCubicYd.toFixed(2)} yd³`, description: "Volume needed before waste" },
+        { label: `With ${wastePercent}% waste`, value: `${wasteAdjustedCubicYd.toFixed(2)} yd³`, description: "Total volume to order" },
+        { label: "Suggested order", value: `${suggestedOrderYd.toFixed(1)} yd³`, description: "Rounded up for ordering" },
       ],
       breakdown: [
         { label: `${shapeAreaFormulaLabel(shape, inputs)} · ${shapeLabel(shape)}`, value: `${area.toFixed(0)} ft²` },
