@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { CalculationOutput } from "@/lib/calculators/types";
+import { CubeIcon } from "@/components/icons/Icons";
 
 function legacyCopy(text: string): boolean {
   const textarea = document.createElement("textarea");
@@ -49,7 +50,7 @@ export function ResultPanel({ result }: { result: CalculationOutput }) {
   }
 
   return (
-    <div className="overflow-hidden rounded-lg border border-border bg-surface-elevated shadow-[var(--shadow-md)]">
+    <div className="overflow-hidden rounded-2xl border border-border bg-surface-elevated shadow-[var(--shadow-lg)]">
       <div className="h-1.5" style={{ background: "var(--gradient-hero)" }} />
       <div className="p-6 md:p-8">
       <div className="flex items-start justify-between gap-4">
@@ -78,13 +79,18 @@ export function ResultPanel({ result }: { result: CalculationOutput }) {
 
       <div className="mt-6 grid grid-cols-1 gap-4 border-t border-border pt-6 sm:grid-cols-3">
         {result.secondary.map((item) => (
-          <div key={item.label}>
-            <p className="text-[13px] font-semibold uppercase tracking-wide text-text-muted">
-              {item.label}
-            </p>
-            <p className="mt-1 font-mono text-[20px] font-semibold text-text-primary">
-              {item.value}
-            </p>
+          <div key={item.label} className="flex items-start gap-3 rounded-xl bg-bg p-4">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary" aria-hidden="true">
+              <CubeIcon className="h-[18px] w-[18px]" />
+            </span>
+            <div className="min-w-0">
+              <p className="text-[13px] font-semibold uppercase tracking-wide text-text-muted">
+                {item.label}
+              </p>
+              <p className="mt-0.5 font-mono text-[18px] font-semibold text-text-primary">
+                {item.value}
+              </p>
+            </div>
           </div>
         ))}
       </div>
