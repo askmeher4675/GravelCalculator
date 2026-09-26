@@ -7,7 +7,7 @@ import { PageContainer } from "@/components/layout/PageContainer";
 import { GuideCard } from "@/components/content/GuideCard";
 import { CalculatorShell } from "@/components/calculator/CalculatorShell";
 import { InfoCallout } from "@/components/content/InfoCallout";
-import { calculators } from "@/lib/calculators";
+import { calculators, calculatorTaglines } from "@/lib/calculators";
 import {
   CalcIcon,
   BoltIcon,
@@ -24,19 +24,6 @@ export const metadata: Metadata = pageMetadata({
   title: { absolute: "Gravel Calculator - Estimate Gravel Cost, Tons & Yards" },
   description: "Free gravel cost calculator: enter your area, gravel type, and price per ton to estimate cubic yards, tons, and total cost for your driveway or landscaping project.",
 });
-
-const CALCULATOR_BLURBS: Record<string, string> = {
-  "gravel-calculator": "Calculate tons, cubic yards and cost for any area.",
-  "driveway-calculator": "Estimate gravel for your driveway.",
-  "concrete-calculator": "Calculate concrete for slabs, footings and more.",
-  "mulch-calculator": "Find out how much mulch you need.",
-  "topsoil-calculator": "Estimate topsoil volume for beds and lawns.",
-  "paver-calculator": "Plan pavers for patios and walkways.",
-  "sod-calculator": "Work out sod rolls or pallets for your lawn.",
-  "fence-calculator": "Estimate posts, rails, and panels needed.",
-  "paint-calculator": "Calculate paint cans for walls and rooms.",
-  "deck-calculator": "Plan decking boards and materials.",
-};
 
 const POPULAR_SLUGS = [
   "gravel-calculator",
@@ -246,7 +233,7 @@ export default function Home() {
                     <div className="absolute inset-x-0 bottom-0 p-5" style={{ textShadow: "0 1px 6px rgba(0,0,0,0.5)" }}>
                       <p className="text-[17px] font-bold text-white">{c.title}</p>
                       <p className="mt-1 text-[14px] font-medium text-white/95">
-                        {CALCULATOR_BLURBS[c.slug] ?? c.intro}
+                        {calculatorTaglines[c.slug] ?? c.intro}
                       </p>
                       <span className="mt-2 inline-flex items-center gap-1 text-[14px] font-semibold text-white">
                         Use Calculator
