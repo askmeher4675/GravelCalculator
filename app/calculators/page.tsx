@@ -5,7 +5,8 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
-import { calculators } from "@/lib/calculators";
+import { calculators, calculatorTaglines, calculatorsByCategory } from "@/lib/calculators";
+import { CalculatorIcon } from "@/components/icons/Icons";
 
 export const metadata: Metadata = pageMetadata({
   path: "/calculators",
@@ -14,44 +15,41 @@ export const metadata: Metadata = pageMetadata({
 });
 
 export default function CalculatorsIndexPage() {
-  const byCategory = new Map<string, typeof calculators[string][]>();
-  for (const config of Object.values(calculators)) {
-    const list = byCategory.get(config.category) ?? [];
-    list.push(config);
-    byCategory.set(config.category, list);
-  }
+  const groups = calculatorsByCategory();
 
   return (
     <>
       <Header />
-      <main className="flex-1 py-8 md:py-12">
+      <main className="flex-1 py-6 md:py-10">
         <PageContainer>
-          <div className="mx-auto max-w-[680px]">
-            <Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "Calculators" }]} />
-            <h1>All Calculators</h1>
-            <p className="mt-3 text-[16px] text-text-secondary">
-              Every calculator estimates material quantities from your project&apos;s measurements, with a full
-              breakdown of the math behind each result.
-            </p>
-          </div>
+          <Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "Calculators" }]} />
+          <h1>All Calculators</h1>
+          <p className="mt-2 max-w-[680px] text-[16px] text-text-secondary">
+            {Object.keys(calculators).length} free calculators that estimate material quantities from your
+            project&apos;s measurements, with a full breakdown of the math behind each result.
+          </p>
 
-          <div className="mx-auto mt-10 max-w-[680px] space-y-10">
-            {Array.from(byCategory.entries()).map(([category, items]) => (
-              <section key={category}>
-                <h2>{category}</h2>
-                <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  {items.map((c) => (
-                    <Link
-                      key={c.slug}
-                      href={`/calculators/${c.slug}`}
-                      className="block rounded-lg border border-border bg-surface p-5 shadow-[var(--shadow-sm)] transition-all duration-200 hover:-translate-y-0.5 hover:border-primary hover:shadow-[var(--shadow-md)] motion-reduce:transition-none motion-reduce:hover:translate-y-0"
-                    >
-                      <p className="text-[17px] font-semibold text-text-primary">{c.title}</p>
-                      <p className="mt-1 text-[15px] text-text-secondary">{c.intro}</p>
-                    </Link>
-                  ))}
-                </div>
-              </section>
+          <div className="mt-6 grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-5">
+            {groups.flatMap(([, items]) => items).map((c) => (
+              <Link
+                key={c.slug}
+                href={`/calculators/${c.slug}`}
+                className="group flex items-center gap-3 rounded-lg border border-border bg-surface p-3 shadow-[var(--shadow-sm)] transition-all duration-200 hover:-translate-y-0.5 hover:border-primary hover:shadow-[var(--shadow-md)] motion-reduce:transition-none motion-reduce:hover:translate-y-0 sm:flex-col sm:items-start sm:gap-0 sm:p-4"
+              >
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-on-primary sm:h-10 sm:w-10">
+                  <CalculatorIcon slug={c.slug} className="h-5 w-5" />
+                </span>
+                <p className="text-[14px] font-semibold leading-snug text-text-primary sm:mt-3 sm:text-[15px]">
+                  {c.title.replace(/ Calculator$/, "")}
+                  <span className="hidden sm:inline"> Calculator</span>
+                </p>
+                <p className="mt-1 hidden text-[13px] leading-snug text-text-secondary sm:block">
+                  {calculatorTaglines[c.slug] ?? c.intro}
+                </p>
+                <p className="mt-auto hidden pt-2 text-[12px] font-medium uppercase tracking-wide text-text-muted sm:block">
+                  {c.category}
+                </p>
+              </Link>
             ))}
           </div>
         </PageContainer>
