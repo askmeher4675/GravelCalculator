@@ -27,37 +27,37 @@ export default function GuidesIndexPage() {
             <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2">
               <GuideCard
                 title="How much gravel for a driveway"
-                description="A quick reference for depth and coverage by driveway size."
+                description="Depth by use, how the layers work, tons for common sizes, and a step-by-step build."
                 href="/guides/gravel-driveway"
                 image="/calc-driveway.webp"
               />
               <GuideCard
                 title="How much does gravel cost?"
-                description="Price per ton and per cubic yard, plus delivery and other costs."
+                description="Price per ton and yard, delivery and hidden costs, bulk vs bags, and a sample budget."
                 href="/guides/gravel-cost-per-ton"
                 image="/calc-gravel.webp"
               />
               <GuideCard
                 title="Gravel coverage chart"
-                description="Square feet covered per ton and cubic yard at every depth."
+                description="Coverage per cubic yard, ton, and bag at every depth, plus metric figures."
                 href="/guides/gravel-coverage-chart"
                 image="/calc-gravel.webp"
               />
               <GuideCard
                 title="Types of gravel and sizes"
-                description="Crushed stone, pea gravel, crusher run and more, and when to use each."
+                description="Stone numbers explained, and the right gravel for driveways, drainage, pavers and paths."
                 href="/guides/gravel-types-and-sizes"
                 image="/calc-gravel.webp"
               />
               <GuideCard
                 title="Concrete slab thickness guide"
-                description="Choosing the right thickness for patios, walkways, and driveways."
+                description="Thickness by use, the base, reinforcement, control joints, and how much to order."
                 href="/guides/concrete-slab-thickness"
                 image="/calc-concrete.webp"
               />
               <GuideCard
                 title="Mulch depth by plant type"
-                description="How much mulch depth different garden beds actually need."
+                description="Depth for beds, trees and gardens, coverage per bag and yard, and mulch types."
                 href="/guides/mulch-depth"
                 image="/calc-mulch.webp"
               />

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { SITE_NAME, pageDates } from "@/lib/site";
+import type { FaqItem } from "@/lib/calculators/types";
 
 type PageTitle = string | { absolute: string };
 
@@ -31,5 +32,18 @@ export function pageMetadata({
       images: ["/opengraph-image"],
       ...(article ? { publishedTime: dates.published, modifiedTime: dates.modified } : {}),
     },
+  };
+}
+
+/** FAQPage structured data for a page's visible FAQ section. */
+export function faqPageJsonLd(faqs: FaqItem[]) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map((faq) => ({
+      "@type": "Question",
+      name: faq.question,
+      acceptedAnswer: { "@type": "Answer", text: faq.answer },
+    })),
   };
 }

@@ -2,7 +2,7 @@ import { CalculatorConfig } from "./types";
 import { SHAPES, shapeAreaSqFt, shapeAreaFormulaLabel, shapeLabel } from "./shapeArea";
 import { CUBIC_FT_PER_CUBIC_YD, withWaste, roundUpToIncrement } from "./volumeModel";
 
-const LBS_PER_CUBIC_YD_AGGREGATE = 2800; // ~1.4 tons per yd³, standard crushed base/gravel
+export const LBS_PER_CUBIC_YD_AGGREGATE = 2800; // ~1.4 tons per yd³, standard crushed base/gravel
 const ORDER_INCREMENT_YD = 0.1; // suggested order rounds up to the nearest 0.1 yd³
 
 export const drivewayCalculator: CalculatorConfig = {
@@ -200,7 +200,7 @@ export const drivewayCalculator: CalculatorConfig = {
     {
       question: "How many layers does a gravel driveway need?",
       answer:
-        "Most gravel driveways use two layers: a 4–6 in compacted base of larger crushed stone (like 3-4 in road base) for structure, and a 2 in top layer of smaller, more finished gravel for a smooth driving surface.",
+        "Most gravel driveways use two layers: a 4–6 in compacted base of larger crushed stone (such as #3 or #4 stone, or crusher run) for structure, and a 2 in top layer of smaller, more finished gravel for a smooth driving surface.",
     },
     {
       question: "Can I order the base and surface layers separately?",
@@ -215,7 +215,7 @@ export const drivewayCalculator: CalculatorConfig = {
     {
       question: "Should the driveway be crowned or sloped?",
       answer:
-        "Yes — a slight crown or cross-slope (about 1 in per foot of width) helps water drain off the surface instead of pooling, which extends the driveway's lifespan.",
+        "Yes — a slight crown or cross-slope (about 1/2 in per foot of width, roughly 4%) helps water drain off the surface instead of pooling, which extends the driveway's lifespan.",
     },
     {
       question: "Does this work for asphalt or concrete driveways?",

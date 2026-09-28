@@ -11,7 +11,7 @@ import { FAQAccordion } from "@/components/content/FAQAccordion";
 import { RelatedCalculators } from "@/components/content/RelatedCalculators";
 import { calculators } from "@/lib/calculators";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { pageMetadata } from "@/lib/seo";
+import { faqPageJsonLd, pageMetadata } from "@/lib/seo";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
 
 export function generateStaticParams() {
@@ -47,16 +47,6 @@ export default async function CalculatorPage({
   const config = calculators[slug];
   if (!config) notFound();
 
-  const faqJsonLd = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: config.faqs.map((faq) => ({
-      "@type": "Question",
-      name: faq.question,
-      acceptedAnswer: { "@type": "Answer", text: faq.answer },
-    })),
-  };
-
   const appJsonLd = {
     "@context": "https://schema.org",
     "@type": "WebApplication",
@@ -74,10 +64,7 @@ export default async function CalculatorPage({
   return (
     <>
       <JsonLd data={appJsonLd} />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
-      />
+      <JsonLd data={faqPageJsonLd(config.faqs)} />
       <Header />
       <main className="flex-1 py-8 md:py-12">
         <PageContainer>
