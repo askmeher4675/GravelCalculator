@@ -20,7 +20,7 @@ export const PAGE_DATES: Record<string, { published: string; modified: string }>
   "/methodology": { published: "2026-09-18", modified: "2026-09-19" },
   "/about": { published: "2026-09-18", modified: "2026-09-19" },
   "/contact": { published: "2026-09-18", modified: "2026-09-19" },
-  "/privacy": { published: "2026-09-18", modified: "2026-09-19" },
+  "/privacy": { published: "2026-09-18", modified: "2026-09-28" },
   "/terms": { published: "2026-09-18", modified: "2026-09-19" },
   "/disclaimer": { published: "2026-09-18", modified: "2026-09-19" },
 };

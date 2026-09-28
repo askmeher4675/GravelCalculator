@@ -9,7 +9,7 @@ import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 export const metadata: Metadata = pageMetadata({
   path: "/about",
   title: "About",
-  description: "About the Gravel Cost Calculator — free, ad-free material calculators for home projects.",
+  description: "About Gravel Cost Calculator — free material and cost calculators for gravel, concrete, mulch, and other home projects.",
 });
 
 export default function AboutPage() {
