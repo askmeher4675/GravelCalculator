@@ -2,12 +2,12 @@ import { CalculatorConfig } from "./types";
 import { SHAPES, shapeAreaSqFt, shapeAreaFormulaLabel, shapeLabel } from "./shapeArea";
 import { rawVolume, withWaste, roundUpToIncrement } from "./volumeModel";
 
-const CUBIC_FT_PER_BAG = 0.5; // standard 0.5 ft³ bagged gravel
+export const CUBIC_FT_PER_BAG = 0.5; // standard 0.5 ft³ bagged gravel
 const LB_PER_KG = 0.45359237;
 const ORDER_INCREMENT_YD = 0.1; // suggested order rounds up to the nearest 0.1 yd³
 
 // Approximate density by gravel type, in lb per cubic yard.
-const GRAVEL_TYPES = [
+export const GRAVEL_TYPES = [
   { id: 1, label: "Crushed Stone (#57)", lbPerCubicYd: 2600 },
   { id: 2, label: "Pea Gravel", lbPerCubicYd: 2800 },
   { id: 3, label: "Crushed Limestone", lbPerCubicYd: 2700 },

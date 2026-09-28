@@ -1,10 +1,20 @@
 import type { ReactNode } from "react";
+import Link from "next/link";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { LastUpdated } from "@/components/content/LastUpdated";
+import { FAQAccordion } from "@/components/content/FAQAccordion";
 import { ArticleJsonLd } from "@/components/seo/ArticleJsonLd";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { faqPageJsonLd } from "@/lib/seo";
+import type { FaqItem } from "@/lib/calculators/types";
+
+export interface GuideLink {
+  href: string;
+  label: string;
+}
 
 export function GuideArticle({
   title,
@@ -12,6 +22,8 @@ export function GuideArticle({
   path,
   breadcrumb,
   intro,
+  related,
+  faqs,
   children,
 }: {
   title: string;
@@ -19,11 +31,16 @@ export function GuideArticle({
   path: string;
   breadcrumb: string;
   intro: string;
+  /** Listed after the article body under "Related guides and calculators". */
+  related?: GuideLink[];
+  /** Rendered last as an FAQ section, with matching FAQPage structured data. */
+  faqs?: FaqItem[];
   children: ReactNode;
 }) {
   return (
     <>
       <ArticleJsonLd title={title} description={description} path={path} />
+      {faqs && faqs.length > 0 && <JsonLd data={faqPageJsonLd(faqs)} />}
       <Header />
       <main className="flex-1 py-8 md:py-12">
         <PageContainer>
@@ -35,6 +52,30 @@ export function GuideArticle({
             <LastUpdated path={path} />
             <p className="mt-3 text-[16px] text-text-secondary">{intro}</p>
             {children}
+
+            {related && related.length > 0 && (
+              <section className="mt-12">
+                <h2>Related guides and calculators</h2>
+                <ul className="mt-4 space-y-2 text-[16px]">
+                  {related.map((link) => (
+                    <li key={link.href}>
+                      <Link href={link.href} className="font-medium text-primary hover:underline">
+                        {link.label} →
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )}
+
+            {faqs && faqs.length > 0 && (
+              <section className="mt-12">
+                <h2>Frequently asked questions</h2>
+                <div className="mt-4">
+                  <FAQAccordion items={faqs} />
+                </div>
+              </section>
+            )}
           </div>
         </PageContainer>
       </main>
@@ -70,4 +111,9 @@ export function DataTable({ headers, rows }: { headers: string[]; rows: (string 
       </table>
     </div>
   );
+}
+
+/** Small-print note under a table or figure. */
+export function TableNote({ children }: { children: ReactNode }) {
+  return <p className="mt-3 text-[14px] text-text-muted">{children}</p>;
 }

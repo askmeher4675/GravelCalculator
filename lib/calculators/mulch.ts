@@ -3,7 +3,7 @@ import { SHAPES, shapeAreaSqFt, shapeAreaFormulaLabel, shapeLabel } from "./shap
 import { rawVolume, withWaste, roundUpToIncrement } from "./volumeModel";
 
 const LBS_PER_CUBIC_YD_MULCH = 500; // ~18.5 lb/ft³, typical for shredded bark mulch
-const CUBIC_FT_PER_BAG = 2; // standard 2 cu ft mulch bag
+export const CUBIC_FT_PER_BAG = 2; // standard 2 cu ft mulch bag
 const ORDER_INCREMENT_YD = 0.1; // suggested order rounds up to the nearest 0.1 yd³
 
 export const mulchCalculator: CalculatorConfig = {

@@ -3,8 +3,8 @@ import { SHAPES, shapeAreaSqFt, shapeAreaFormulaLabel, shapeLabel } from "./shap
 import { rawVolume, withWaste, roundUpToIncrement } from "./volumeModel";
 
 const LBS_PER_CUBIC_YD_CONCRETE = 4050; // ~150 lb/ft³ for standard concrete
-const CUBIC_FT_PER_80LB_BAG = 0.6; // yield of one 80 lb bag of ready-mix
-const ORDER_INCREMENT_YD = 0.25; // ready-mix trucks are ordered in quarter-yard increments
+export const CUBIC_FT_PER_80LB_BAG = 0.6; // yield of one 80 lb bag of ready-mix
+export const ORDER_INCREMENT_YD = 0.25; // ready-mix trucks are ordered in quarter-yard increments
 
 export const concreteCalculator: CalculatorConfig = {
   slug: "concrete-calculator",

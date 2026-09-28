@@ -2,12 +2,12 @@ import { calculators } from "@/lib/calculators";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
 
 const GUIDES = [
-  ["/guides/gravel-driveway", "How Much Gravel for a Driveway", "Depth and quantity by driveway size and traffic type."],
-  ["/guides/gravel-cost-per-ton", "Gravel Cost Per Ton and Per Cubic Yard", "Price ranges, ton-to-yard conversion, and delivery costs."],
-  ["/guides/gravel-coverage-chart", "Gravel Coverage Chart", "Square feet covered per ton and cubic yard at each depth."],
-  ["/guides/gravel-types-and-sizes", "Gravel Types and Sizes", "Which gravel to use for driveways, paths, drainage, and bases."],
-  ["/guides/concrete-slab-thickness", "Concrete Slab Thickness Guide", "Slab thickness for patios, walkways, driveways, and footings."],
-  ["/guides/mulch-depth", "Mulch Depth by Plant Type", "How deep to mulch beds, tree rings, and vegetable gardens."],
+  ["/guides/gravel-driveway", "How Much Gravel for a Driveway", "Depth by use and soil, how base and surface layers work, tons for common driveway sizes, and a step-by-step build."],
+  ["/guides/gravel-cost-per-ton", "Gravel Cost Per Ton and Per Cubic Yard", "Price ranges, ton-to-yard conversion, delivery costs, bulk vs bagged gravel, and a worked driveway budget."],
+  ["/guides/gravel-coverage-chart", "Gravel Coverage Chart", "Square feet covered per cubic yard, ton, and bag at each depth, plus metric coverage."],
+  ["/guides/gravel-types-and-sizes", "Gravel Types and Sizes", "Crushed stone numbers explained, and which gravel to use for driveways, drainage, pavers, and paths."],
+  ["/guides/concrete-slab-thickness", "Concrete Slab Thickness Guide", "Slab thickness by use, base and vapor retarder, reinforcement, control joints, and how much concrete to order."],
+  ["/guides/mulch-depth", "Mulch Depth by Plant Type", "How deep to mulch beds, trees, and vegetable gardens, coverage per bag and yard, and mulch types."],
 ];
 
 export function GET() {
