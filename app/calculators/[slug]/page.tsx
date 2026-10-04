@@ -7,6 +7,7 @@ import { PageContainer } from "@/components/layout/PageContainer";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { CalculatorShell } from "@/components/calculator/CalculatorShell";
 import { InfoCallout } from "@/components/content/InfoCallout";
+import { DataTable, TableNote } from "@/components/content/GuideArticle";
 import { FAQAccordion } from "@/components/content/FAQAccordion";
 import { RelatedCalculators } from "@/components/content/RelatedCalculators";
 import { calculators } from "@/lib/calculators";
@@ -84,9 +85,17 @@ export default async function CalculatorPage({
               <CalculatorShell slug={config.slug} />
             </div>
 
-            <section className="mt-16">
+            <section id="how-its-calculated" className="mt-16 scroll-mt-24">
               <h2>How this is calculated</h2>
               <p className="mt-3 text-[16px] text-text-secondary">{config.methodology}</p>
+              <p className="mt-3 text-[14px] text-text-muted">
+                The material weights, waste allowances, and rounding rules behind every calculator are documented on
+                our{" "}
+                <Link href="/methodology" className="text-primary hover:underline">
+                  methodology page
+                </Link>
+                .
+              </p>
             </section>
 
             <section className="mt-12">
@@ -95,6 +104,35 @@ export default async function CalculatorPage({
                 <InfoCallout>{config.example}</InfoCallout>
               </div>
             </section>
+
+            {config.sections?.map((section) => (
+              <section key={section.heading} className="mt-12">
+                <h2>{section.heading}</h2>
+                {section.paragraphs?.map((p) => (
+                  <p key={p} className="mt-3 text-[16px] text-text-secondary">
+                    {p}
+                  </p>
+                ))}
+                {section.list && (
+                  <ul className="mt-4 list-disc space-y-2 pl-5 text-[16px] text-text-secondary">
+                    {section.list.map((item) => (
+                      <li key={item}>{item}</li>
+                    ))}
+                  </ul>
+                )}
+                {section.table && (
+                  <>
+                    <DataTable headers={section.table.headers} rows={section.table.rows} />
+                    {section.table.note && <TableNote>{section.table.note}</TableNote>}
+                  </>
+                )}
+                {section.after?.map((p) => (
+                  <p key={p} className="mt-3 text-[16px] text-text-secondary">
+                    {p}
+                  </p>
+                ))}
+              </section>
+            ))}
 
             <section className="mt-12">
               <h2>Related calculators</h2>

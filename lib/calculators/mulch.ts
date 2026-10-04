@@ -2,9 +2,29 @@ import { CalculatorConfig } from "./types";
 import { SHAPES, shapeAreaSqFt, shapeAreaFormulaLabel, shapeLabel } from "./shapeArea";
 import { rawVolume, withWaste, roundUpToIncrement } from "./volumeModel";
 
-const LBS_PER_CUBIC_YD_MULCH = 500; // ~18.5 lb/ft³, typical for shredded bark mulch
+export const LBS_PER_CUBIC_YD_MULCH = 500; // ~18.5 lb/ft³, typical for shredded bark mulch
 export const CUBIC_FT_PER_BAG = 2; // standard 2 cu ft mulch bag
 const ORDER_INCREMENT_YD = 0.1; // suggested order rounds up to the nearest 0.1 yd³
+
+const fmt = (n: number) => (Number.isInteger(n) ? n.toString() : n.toFixed(1));
+
+const COVERAGE_ROWS = [1, 2, 3, 4].map((depthIn) => {
+  const sqFtPerYd = 27 / (depthIn / 12);
+  const sqFtPerBag = CUBIC_FT_PER_BAG / (depthIn / 12);
+  const yd3Per100 = (100 * (depthIn / 12)) / 27;
+  return [
+    `${depthIn} in`,
+    `${fmt(sqFtPerYd)} ft²`,
+    `${fmt(sqFtPerBag)} ft²`,
+    `${yd3Per100.toFixed(2)} yd³`,
+    `${Math.ceil((100 * (depthIn / 12)) / CUBIC_FT_PER_BAG)} bags`,
+  ];
+});
+
+// Worked example: a mulch ring around a tree, 6 ft across outside and 1 ft across at the trunk, 3 in deep, 10% waste.
+const RING_AREA = Math.PI * (3 * 3 - 0.5 * 0.5);
+const RING_FT3 = RING_AREA * (3 / 12) * 1.1;
+const RING_BAGS = Math.ceil(RING_FT3 / CUBIC_FT_PER_BAG);
 
 export const mulchCalculator: CalculatorConfig = {
   slug: "mulch-calculator",
@@ -184,6 +204,58 @@ export const mulchCalculator: CalculatorConfig = {
     "Area is calculated from the shape you select — rectangle (length × width), circle (π × radius²), triangle (½ × base × height), circular ring (π × (outer radius² − inner radius²)) for a mulch ring around a tree, or trapezoid (average of the two parallel sides × width). That area is multiplied by depth to get the exact volume required, converted from cubic feet to cubic yards (27 ft³ per yd³). Your selected waste percentage is added to cover settling, uneven ground, and spillage, and weight and bag count are both calculated from that same waste-adjusted volume — weight assumes standard shredded bark mulch at approximately 500 lb per cubic yard (actual density varies with moisture and mulch type), and the bag estimate assumes standard 2 cubic foot bags. The suggested order then rounds that waste-adjusted volume up to the nearest 0.1 yd³ for bulk delivery.",
   example:
     "A 15 ft × 8 ft garden bed at 3 in deep needs 1.11 yd³ of mulch. With 10% waste that's 1.22 yd³ — about 611 lb, or 17 bags of 2 ft³ mulch — so suggested order is 1.3 yd³ in bulk.",
+  sections: [
+    {
+      heading: "How much area mulch covers by depth",
+      paragraphs: [
+        "A cubic yard of mulch is 27 cubic feet. Spread 2 in deep it covers 162 ft², and at 3 in deep it covers 108 ft². The table also shows how far a standard 2 ft³ bag goes and how much you need for 100 ft², which makes a handy rule of thumb when you are shopping.",
+      ],
+      table: {
+        headers: ["Depth", "1 yd³ covers", "One 2 ft³ bag covers", "Needed for 100 ft²", "Bags for 100 ft²"],
+        rows: COVERAGE_ROWS,
+        note: "Bag counts are before any waste allowance. Round up, because partial bags aren't sold.",
+      },
+    },
+    {
+      heading: "Choosing a type of mulch",
+      table: {
+        headers: ["Mulch", "Typical lifespan", "Best for", "Notes"],
+        rows: [
+          ["Shredded hardwood bark", "1–2 years", "General beds, slopes", "Knits together and stays put in rain"],
+          ["Bark nuggets (pine or fir)", "2–4 years", "Foundation beds and tree rings", "Lasts longer but can float away in heavy rain"],
+          ["Pine straw", "1–2 years", "Acid-loving plants, southern landscapes", "Lightweight and easy to spread on slopes"],
+          ["Cedar or cypress", "2–3 years", "Visible beds", "Resists decay and has a distinct scent"],
+          ["Compost", "Under a year", "Vegetable and flower beds", "Feeds the soil as it breaks down"],
+          ["Rubber", "10+ years", "Play areas", "Doesn't improve soil and can get hot in direct sun"],
+        ],
+        note: "Lifespans are typical ranges. Organic mulches break down faster in hot, wet climates.",
+      },
+    },
+    {
+      heading: "Worked example: a mulch ring around a tree",
+      paragraphs: [
+        `A ring 6 ft across with a 1 ft clear zone around the trunk covers about ${RING_AREA.toFixed(1)} ft². At 3 in deep with 10% waste, that's ${RING_FT3.toFixed(1)} ft³, or ${RING_BAGS} bags of 2 ft³ mulch. Pick the circular ring option in the calculator and enter 6 ft outer and 1 ft inner diameter to get the same answer.`,
+        "Mulch should never touch the trunk. Mounding mulch against the bark, sometimes called a mulch volcano, holds moisture against the tree and invites rot, insects, and girdling roots. Pull the mulch back a few inches so the root flare stays visible, and spread it wide rather than deep.",
+      ],
+    },
+    {
+      heading: "Bulk versus bagged mulch",
+      paragraphs: [
+        `It takes about ${Math.ceil(27 / CUBIC_FT_PER_BAG)} bags of 2 ft³ mulch to equal one cubic yard. For a few small beds, bags are convenient and you can buy only what you need. Past roughly two or three cubic yards, bulk delivery is almost always cheaper per cubic foot, and it's far less handling than carrying dozens of bags.`,
+        "A bulk delivery lands in one pile, so choose a spot on a driveway or on a tarp near the beds, and plan to move it within a day or two. Wet mulch is heavier than the figure the calculator assumes, and a pile left in the rain can start to heat up and smell. If you are hauling it yourself, remember that a full-size pickup bed holds only about one to two cubic yards, depending on how high you pile it and how much weight the truck can carry.",
+      ],
+    },
+    {
+      heading: "Putting it down",
+      list: [
+        "Pull weeds first. Mulch slows them down but doesn't kill established ones, and cardboard or newspaper under the mulch can help smother stubborn patches.",
+        "Edge the bed with a spade so the mulch has a clear border and doesn't spill onto the lawn.",
+        "Spread 2 to 3 in deep for most beds. Fine mulches pack down, so keep them toward 2 in. Coarse bark can go to 3 in.",
+        "Keep mulch a few inches away from tree trunks, plant stems, and house siding or foundation walls.",
+        "Refresh each spring by raking the old mulch loose and topping up an inch or less, rather than adding a full new layer on top of a thick old one.",
+      ],
+    },
+  ],
   faqs: [
     {
       question: "My bed isn't a rectangle — can this calculator still handle it?",
