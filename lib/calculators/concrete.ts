@@ -31,11 +31,12 @@ const BAG_ROWS = [
 export const concreteCalculator: CalculatorConfig = {
   slug: "concrete-calculator",
   title: "Concrete Calculator",
+  seoTitle: "Concrete Calculator: Cubic Yards & 80 lb Bags",
   category: "Concrete & Masonry",
   intro:
     "Estimate how many cubic yards of ready-mix concrete — or how many 80 lb bags — you need for a slab, footing, or walkway.",
   metaDescription:
-    "Concrete calculator for slabs, footings, and walkways. Enter length, width, and thickness to get cubic yards of ready-mix concrete or the number of 80 lb bags needed.",
+    "Concrete calculator for slabs, patios, footings and walkways. Get cubic yards for a ready-mix order or 80 lb bags, with volumes for common slab sizes.",
   fields: [
     {
       key: "shape",

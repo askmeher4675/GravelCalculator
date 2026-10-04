@@ -26,11 +26,12 @@ const PATIO_SAND_YD = (PATIO_AREA_SQ_FT * (1 / 12)) / 27;
 export const paverCalculator: CalculatorConfig = {
   slug: "paver-calculator",
   title: "Paver Calculator",
+  seoTitle: "Paver Calculator: How Many Pavers Do You Need?",
   category: "Landscaping",
   intro:
     "Estimate how many pavers you need for a patio or walkway based on the area size and the dimensions of a single paver.",
   metaDescription:
-    "Paver calculator for patios and walkways. Enter the area size and your paver's dimensions to get the number of pavers to order.",
+    "Paver calculator for patios and walkways. Enter the area and paver size to get the pavers to order, plus base depth, patterns and waste by layout.",
   fields: [
     {
       key: "shape",

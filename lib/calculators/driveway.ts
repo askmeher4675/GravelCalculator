@@ -33,11 +33,12 @@ const COST_EXAMPLE_PRICE = 40;
 export const drivewayCalculator: CalculatorConfig = {
   slug: "driveway-calculator",
   title: "Driveway Calculator",
+  seoTitle: "Gravel Driveway Calculator: Tons, Yards & Base Depth",
   category: "Landscaping",
   intro:
     "Estimate the total gravel volume for a driveway built with a compacted base layer and a top surface layer.",
   metaDescription:
-    "Driveway gravel calculator. Enter driveway length, width, base depth, and surface depth to get total gravel volume and estimated weight.",
+    "Gravel driveway calculator for base and surface layers. Get cubic yards and tons for any size, plus layer depths, compaction and a cost example.",
   fields: [
     {
       key: "shape",

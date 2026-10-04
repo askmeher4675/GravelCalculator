@@ -20,11 +20,12 @@ const YARD_PERIMETER_SECTIONS = Math.ceil(300 / 8);
 export const fenceCalculator: CalculatorConfig = {
   slug: "fence-calculator",
   title: "Fence Calculator",
+  seoTitle: "Fence Calculator: Posts, Rails & Post Spacing",
   category: "Fencing",
   intro:
     "Estimate how many posts, rails, and pickets you need for a fence based on its total length and post spacing.",
   metaDescription:
-    "Fence calculator for wood, vinyl, and chain-link fences. Enter total length and post spacing to get the number of posts and rails you need.",
+    "Fence calculator for wood, vinyl and chain-link fences. Get posts and rails from the length and spacing, plus gates, corners and picket counts.",
   fields: [
     { key: "length", label: "Fence length", unit: "ft", type: "number", placeholder: "150", min: 0, step: 1 },
     {

@@ -35,11 +35,12 @@ const PRICE_ROWS = TON_PRICES.map((p) => [`$${p} per ton`, `$${((p * AVG_LB_PER_
 export const gravelCalculator: CalculatorConfig = {
   slug: "gravel-calculator",
   title: "Gravel Calculator",
+  seoTitle: "Gravel Calculator: Cost, Tons & Cubic Yards",
   category: "Landscaping",
   intro:
     "Calculate how much gravel you need — and what it will cost — for a driveway, walkway, or drainage bed. Enter your area, gravel type, and price per ton to get cubic yards, tons, and total estimated cost.",
   metaDescription:
-    "Free gravel cost calculator. Enter length, width, depth, gravel type, and price per ton to instantly estimate cubic yards, tons needed, and total cost.",
+    "Free gravel cost calculator. Enter area, depth, gravel type and price per ton to get cubic yards, tons, bags and total cost, with waste included.",
   fields: [
     {
       key: "shape",

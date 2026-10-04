@@ -31,11 +31,12 @@ const BED_TOPSOIL_YD = BED_ORDER_YD * 0.7;
 export const topsoilCalculator: CalculatorConfig = {
   slug: "topsoil-calculator",
   title: "Topsoil Calculator",
+  seoTitle: "Topsoil Calculator: Cubic Yards, Tons & Depth",
   category: "Lawn & Garden",
   intro:
     "Estimate how many cubic yards of topsoil you need to fill a garden bed, raised bed, or level a section of lawn.",
   metaDescription:
-    "Topsoil calculator for garden beds and lawn leveling. Enter length, width, and depth to get the cubic yards of topsoil you need to order.",
+    "Topsoil calculator for garden beds, raised beds and lawn leveling. Get cubic yards and tons to order, plus how deep to spread topsoil by project.",
   fields: [
     {
       key: "shape",

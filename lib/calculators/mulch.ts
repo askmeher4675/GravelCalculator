@@ -29,11 +29,12 @@ const RING_BAGS = Math.ceil(RING_FT3 / CUBIC_FT_PER_BAG);
 export const mulchCalculator: CalculatorConfig = {
   slug: "mulch-calculator",
   title: "Mulch Calculator",
+  seoTitle: "Mulch Calculator: Cubic Yards & Bags for Any Bed",
   category: "Lawn & Garden",
   intro:
     "Estimate how many cubic yards or bags of mulch you need for a garden bed or landscaping area based on size and depth.",
   metaDescription:
-    "Mulch calculator for garden beds and landscaping. Enter length, width, and depth to get cubic yards of bulk mulch or the number of 2 ft³ bags needed.",
+    "Mulch calculator for garden beds and tree rings. Get cubic yards for bulk delivery or 2 ft³ bags at 2 to 4 inches deep, with coverage by depth.",
   fields: [
     {
       key: "shape",

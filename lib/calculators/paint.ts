@@ -38,11 +38,12 @@ const EXAMPLE_NET_AREA = EXAMPLE_AREA - EXAMPLE_OPENINGS;
 export const paintCalculator: CalculatorConfig = {
   slug: "paint-calculator",
   title: "Paint Calculator",
+  seoTitle: "Paint Calculator: Gallons Needed for Any Room",
   category: "Painting",
   intro:
     "Estimate how many gallons of paint you need for a room or wall based on the total wall length, height, and number of coats.",
   metaDescription:
-    "Paint calculator for rooms and walls. Enter wall length, height, and number of coats to get the gallons of paint you need to buy.",
+    "Paint calculator for rooms and walls. Enter wall length, height and coats to get gallons to buy, with coverage by surface and primer guidance.",
   fields: [
     {
       key: "wallLength",

@@ -68,6 +68,8 @@ export interface ContentSection {
 export interface CalculatorConfig {
   slug: string;
   title: string;
+  /** Full <title> for search results (no site suffix is added). Keep it to 60 characters or fewer. */
+  seoTitle?: string;
   category: string;
   intro: string;
   metaDescription: string;

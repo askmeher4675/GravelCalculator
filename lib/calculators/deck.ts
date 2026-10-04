@@ -39,11 +39,12 @@ const BOARD_WIDTH_ROWS = [
 export const deckCalculator: CalculatorConfig = {
   slug: "deck-calculator",
   title: "Deck Calculator",
+  seoTitle: "Deck Calculator: Boards, Joists & Square Footage",
   category: "Decks & Outdoor Projects",
   intro:
     "Estimate the square footage, decking boards, and joists you need to build a deck based on its length, width, and board width.",
   metaDescription:
-    "Deck calculator for decking boards and joists. Enter deck length, width, and board width to get square footage, boards, and joist count.",
+    "Deck calculator for decking boards, joists and square footage. Compare board widths and materials to build a materials list before you price the job.",
   fields: [
     { key: "length", label: "Deck length", unit: "ft", type: "number", placeholder: "16", min: 0, step: 0.5 },
     { key: "width", label: "Deck width", unit: "ft", type: "number", placeholder: "12", min: 0, step: 0.5 },

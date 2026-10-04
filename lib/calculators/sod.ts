@@ -20,11 +20,12 @@ const LAWN_ROWS = LAWN_SIZES_SQ_FT.map((area) => {
 export const sodCalculator: CalculatorConfig = {
   slug: "sod-calculator",
   title: "Sod Calculator",
+  seoTitle: "Sod Calculator: Square Feet, Pallets & Rolls",
   category: "Lawn & Garden",
   intro:
     "Estimate how much sod you need for a new lawn, in square feet, pallets, or rolls, based on the area's length and width.",
   metaDescription:
-    "Sod calculator for new lawns. Enter your lawn's length and width to get the square footage, pallets, and rolls of sod you need.",
+    "Sod calculator for new lawns. Enter your lawn's shape and size to get square feet, pallets and rolls, plus when to lay sod and how to water it.",
   fields: [
     {
       key: "shape",

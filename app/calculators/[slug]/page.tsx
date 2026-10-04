@@ -30,11 +30,8 @@ export async function generateMetadata({
   const path = `/calculators/${slug}`;
   return pageMetadata({
     path,
-    // The gravel calculator is the flagship page: skip the site-name suffix (it would repeat "Gravel").
-    title:
-      slug === "gravel-calculator"
-        ? { absolute: "Gravel Calculator: Cost, Tons & Cubic Yards" }
-        : `${config.title} - Free Online Estimator`,
+    // Each calculator sets its own full title (no site-name suffix, which would push it past ~60 characters).
+    title: config.seoTitle ? { absolute: config.seoTitle } : `${config.title} - Free Online Estimator`,
     description: config.metaDescription,
   });
 }
