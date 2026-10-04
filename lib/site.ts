@@ -23,7 +23,7 @@ export const PAGE_DATES: Record<string, { published: string; modified: string }>
   "/guides/pea-gravel-coverage": { published: "2026-10-04", modified: "2026-10-04" },
   "/guides/deck-cost-breakdown": { published: "2026-10-04", modified: "2026-10-04" },
   "/calculators/driveway-calculator": { published: "2026-09-19", modified: "2026-09-28" },
-  "/methodology": { published: "2026-09-18", modified: "2026-09-19" },
+  "/methodology": { published: "2026-09-18", modified: "2026-09-28" },
   "/about": { published: "2026-09-18", modified: "2026-10-04" },
   "/contact": { published: "2026-09-18", modified: "2026-09-19" },
   "/privacy": { published: "2026-09-18", modified: "2026-09-28" },

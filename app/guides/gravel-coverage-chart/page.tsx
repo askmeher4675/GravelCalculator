@@ -72,7 +72,7 @@ export default function GravelCoverageChartPage() {
     .map((t) => [
       t.label,
       `${fmt(t.lbPerCubicYd)} lb`,
-      (t.lbPerCubicYd / 2000).toFixed(2),
+      String(t.lbPerCubicYd / 2000), // exact, e.g. 1.325 rather than a rounded 1.32
       `${fmt((SQFT_PER_YD3_AT_1IN * (2000 / t.lbPerCubicYd)) / 3)} sq ft`,
     ]);
   const areaRows = AREAS.map((area) => [
