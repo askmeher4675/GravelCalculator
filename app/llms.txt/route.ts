@@ -37,7 +37,7 @@ ${guideLines.join("\n")}
 
 ## About
 
-- [Methodology](${SITE_URL}/methodology): Formulas, density assumptions, and waste factors behind every estimate.
+- [Methodology](${SITE_URL}/methodology): Shared formulas, material weights, waste allowances, rounding rules, testing, and a change log for every calculator.
 - [About](${SITE_URL}/about): What this site is and who it is for.
 - [Contact](${SITE_URL}/contact): Questions and corrections.
 - [Disclaimer](${SITE_URL}/disclaimer): Why results are estimates, not order quantities or professional advice.
