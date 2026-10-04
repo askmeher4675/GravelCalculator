@@ -15,6 +15,8 @@ export interface FieldConfig {
   min?: number;
   step?: number;
   options?: SelectOption[];
+  /** When true, the field may be left blank; calculate() then receives no value for it. */
+  optional?: boolean;
   /** Only render/require this field when another field's value matches. */
   visibleIf?: { field: string; equals: number | number[] };
 }
