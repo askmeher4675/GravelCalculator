@@ -4,7 +4,7 @@ export const JOIST_SPACING_IN = 16; // standard on-center joist spacing
 export const BOARD_LENGTH_FT = 12; // common stocked decking board length
 
 /** Core decking quantities, shared by the calculator and the reference tables on the page. */
-function deckQuantities(length: number, width: number, boardWidthIn: number, wastePercent: number) {
+export function deckQuantities(length: number, width: number, boardWidthIn: number, wastePercent: number) {
   const areaSqFt = length * width;
   const linearFtNeeded = areaSqFt / (boardWidthIn / 12);
   const linearFtWithWaste = linearFtNeeded * (1 + wastePercent / 100);
@@ -201,4 +201,5 @@ export const deckCalculator: CalculatorConfig = {
     { slug: "concrete-calculator", title: "Concrete Calculator" },
     { slug: "paint-calculator", title: "Paint Calculator" },
   ],
+  relatedGuides: [{ href: "/guides/deck-cost-breakdown", title: "Deck cost breakdown" }],
 };

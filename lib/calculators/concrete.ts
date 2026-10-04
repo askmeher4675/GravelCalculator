@@ -337,5 +337,9 @@ export const concreteCalculator: CalculatorConfig = {
     { slug: "paver-calculator", title: "Paver Calculator" },
     { slug: "deck-calculator", title: "Deck Calculator" },
   ],
-  relatedGuides: [{ href: "/guides/concrete-slab-thickness", title: "Concrete slab thickness guide" }],
+  relatedGuides: [
+    { href: "/guides/concrete-slab-thickness", title: "Concrete slab thickness guide" },
+    { href: "/guides/gravel-under-concrete-slab", title: "How much gravel under a concrete slab" },
+    { href: "/guides/concrete-walkway-path", title: "How much concrete for a walkway or path" },
+  ],
 };

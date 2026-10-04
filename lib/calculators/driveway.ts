@@ -348,5 +348,8 @@ export const drivewayCalculator: CalculatorConfig = {
     { slug: "concrete-calculator", title: "Concrete Calculator" },
     { slug: "paver-calculator", title: "Paver Calculator" },
   ],
-  relatedGuides: [{ href: "/guides/gravel-driveway", title: "How much gravel for a driveway" }],
+  relatedGuides: [
+    { href: "/guides/gravel-driveway", title: "How much gravel for a driveway" },
+    { href: "/guides/driveway-slope-and-grade", title: "Driveway slope and grade" },
+  ],
 };

@@ -9,7 +9,7 @@ import { GuideCard } from "@/components/content/GuideCard";
 export const metadata: Metadata = pageMetadata({
   path: "/guides",
   title: "Guides",
-  description: "Practical reference guides for planning home projects: gravel driveway depth, gravel cost, coverage and types, concrete slab thickness, and mulch depth.",
+  description: "Practical reference guides for planning home projects: gravel driveway depth and slope, gravel cost, coverage and types, gravel under a concrete slab, concrete slab and walkway sizing, deck costs, and mulch depth.",
 });
 
 export default function GuidesIndexPage() {
@@ -60,6 +60,36 @@ export default function GuidesIndexPage() {
                 description="Depth for beds, trees and gardens, coverage per bag and yard, and mulch types."
                 href="/guides/mulch-depth"
                 image="/calc-mulch.webp"
+              />
+              <GuideCard
+                title="Gravel under a concrete slab"
+                description="Base depth, which stone to use, and the yards and tons for common slab sizes."
+                href="/guides/gravel-under-concrete-slab"
+                image="/calc-concrete.webp"
+              />
+              <GuideCard
+                title="Concrete walkway or path"
+                description="Concrete by length, width and thickness, plus joints, base, slope and a worked example."
+                href="/guides/concrete-walkway-path"
+                image="/calc-concrete.webp"
+              />
+              <GuideCard
+                title="Driveway slope and grade"
+                description="Calculate slope from rise and run, how steep is too steep, and crown for drainage."
+                href="/guides/driveway-slope-and-grade"
+                image="/calc-driveway.webp"
+              />
+              <GuideCard
+                title="Pea gravel coverage"
+                description="What a ton, yard or bag covers at each depth, tons for common areas, and best uses."
+                href="/guides/pea-gravel-coverage"
+                image="/calc-gravel.webp"
+              />
+              <GuideCard
+                title="Deck cost breakdown"
+                description="Every line item in a deck estimate, a worked 16 × 12 ft example, and where to save."
+                href="/guides/deck-cost-breakdown"
+                image="/calc-paver.webp"
               />
             </div>
           </div>
