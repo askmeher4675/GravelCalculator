@@ -8,6 +8,11 @@ const GUIDES = [
   ["/guides/gravel-types-and-sizes", "Gravel Types and Sizes", "Crushed stone numbers explained, and which gravel to use for driveways, drainage, pavers, and paths."],
   ["/guides/concrete-slab-thickness", "Concrete Slab Thickness Guide", "Slab thickness by use, base and vapor retarder, reinforcement, control joints, and how much concrete to order."],
   ["/guides/mulch-depth", "Mulch Depth by Plant Type", "How deep to mulch beds, trees, and vegetable gardens, coverage per bag and yard, and mulch types."],
+  ["/guides/gravel-under-concrete-slab", "How Much Gravel Under a Concrete Slab", "Base depth by project, which stone to use, and the cubic yards and tons of gravel for common slab sizes."],
+  ["/guides/concrete-walkway-path", "How Much Concrete for a Walkway or Path", "Concrete by length, width and thickness, plus joints, gravel base, slope, and a worked example."],
+  ["/guides/driveway-slope-and-grade", "Driveway Slope and Grade", "How to calculate slope from rise and run, a percent-degrees-ratio chart, how steep is too steep, and crown for drainage."],
+  ["/guides/pea-gravel-coverage", "Pea Gravel Coverage Chart", "Square feet covered by a ton, cubic yard, or bag of pea gravel at each depth, tons for common areas, and best uses."],
+  ["/guides/deck-cost-breakdown", "Deck Cost Breakdown", "Every line item in a deck materials estimate, a worked 16 by 12 ft example, material comparison, and ways to save."],
 ];
 
 export function GET() {

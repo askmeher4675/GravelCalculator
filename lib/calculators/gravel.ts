@@ -344,5 +344,7 @@ export const gravelCalculator: CalculatorConfig = {
     { href: "/guides/gravel-cost-per-ton", title: "How much does gravel cost?" },
     { href: "/guides/gravel-coverage-chart", title: "Gravel coverage chart" },
     { href: "/guides/gravel-types-and-sizes", title: "Types of gravel and sizes" },
+    { href: "/guides/pea-gravel-coverage", title: "Pea gravel coverage chart" },
+    { href: "/guides/gravel-under-concrete-slab", title: "How much gravel under a concrete slab" },
   ],
 };
