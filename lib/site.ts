@@ -19,7 +19,7 @@ export const PAGE_DATES: Record<string, { published: string; modified: string }>
   "/guides/mulch-depth": { published: "2026-09-18", modified: "2026-09-28" },
   "/calculators/driveway-calculator": { published: "2026-09-19", modified: "2026-09-28" },
   "/methodology": { published: "2026-09-18", modified: "2026-09-19" },
-  "/about": { published: "2026-09-18", modified: "2026-09-19" },
+  "/about": { published: "2026-09-18", modified: "2026-10-04" },
   "/contact": { published: "2026-09-18", modified: "2026-09-19" },
   "/privacy": { published: "2026-09-18", modified: "2026-09-28" },
   "/terms": { published: "2026-09-18", modified: "2026-09-19" },
