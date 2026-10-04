@@ -39,6 +39,7 @@ export function CalculatorShell({ slug }: { slug: string }) {
     for (const field of visibleFields) {
       const raw = values[field.key];
       const num = parseFloat(raw);
+      if (field.optional && raw === "") continue;
       if (raw === "" || Number.isNaN(num)) {
         nextErrors[field.key] = `Enter a ${field.label.toLowerCase()}`;
       } else if (num <= 0) {

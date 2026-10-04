@@ -15,6 +15,8 @@ export interface FieldConfig {
   min?: number;
   step?: number;
   options?: SelectOption[];
+  /** When true, the field may be left blank; calculate() then receives no value for it. */
+  optional?: boolean;
   /** Only render/require this field when another field's value matches. */
   visibleIf?: { field: string; equals: number | number[] };
 }
@@ -55,9 +57,21 @@ export interface RelatedGuideRef {
   title: string;
 }
 
+/** Extra educational content rendered below the example calculation. */
+export interface ContentSection {
+  heading: string;
+  paragraphs?: string[];
+  list?: string[];
+  table?: { headers: string[]; rows: (string | number)[][]; note?: string };
+  /** Paragraphs shown after the list/table. */
+  after?: string[];
+}
+
 export interface CalculatorConfig {
   slug: string;
   title: string;
+  /** Full <title> for search results (no site suffix is added). Keep it to 60 characters or fewer. */
+  seoTitle?: string;
   category: string;
   intro: string;
   metaDescription: string;
@@ -71,6 +85,8 @@ export interface CalculatorConfig {
   ) => CalculationOutput;
   methodology: string;
   example: string;
+  /** Optional in-depth sections (tables, checklists, buying advice) for the page body. */
+  sections?: ContentSection[];
   faqs: FaqItem[];
   related: RelatedCalculatorRef[];
   relatedGuides?: RelatedGuideRef[];

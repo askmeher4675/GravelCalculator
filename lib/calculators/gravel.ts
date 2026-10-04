@@ -4,7 +4,7 @@ import { rawVolume, withWaste, roundUpToIncrement } from "./volumeModel";
 
 export const CUBIC_FT_PER_BAG = 0.5; // standard 0.5 ft³ bagged gravel
 const LB_PER_KG = 0.45359237;
-const ORDER_INCREMENT_YD = 0.1; // suggested order rounds up to the nearest 0.1 yd³
+export const ORDER_INCREMENT_YD = 0.1; // suggested order rounds up to the nearest 0.1 yd³
 
 // Approximate density by gravel type, in lb per cubic yard.
 export const GRAVEL_TYPES = [
@@ -15,14 +15,32 @@ export const GRAVEL_TYPES = [
   { id: 5, label: "Decomposed Granite", lbPerCubicYd: 2800 },
 ];
 
+const COVERAGE_ROWS = [2, 3, 4, 6].map((depthIn) => {
+  const { cubicYd } = rawVolume(100, depthIn / 12);
+  const tons = (type: number) => ((cubicYd * GRAVEL_TYPES[type - 1].lbPerCubicYd) / 2000).toFixed(2);
+  return [`${depthIn} in`, `${cubicYd.toFixed(2)} yd³`, `${tons(1)} tons`, `${tons(2)} tons`];
+});
+
+const WEIGHT_ROWS = GRAVEL_TYPES.map((t) => [
+  t.label,
+  `${t.lbPerCubicYd.toLocaleString("en-US")} lb`,
+  `${(t.lbPerCubicYd / 2000).toFixed(2)} tons`,
+  `${(2000 / t.lbPerCubicYd).toFixed(2)} yd³`,
+]);
+
+const TON_PRICES = [20, 35, 50, 75];
+const AVG_LB_PER_YD3 = 2700;
+const PRICE_ROWS = TON_PRICES.map((p) => [`$${p} per ton`, `$${((p * AVG_LB_PER_YD3) / 2000).toFixed(0)} per yd³`]);
+
 export const gravelCalculator: CalculatorConfig = {
   slug: "gravel-calculator",
   title: "Gravel Calculator",
+  seoTitle: "Gravel Calculator: Cost, Tons & Cubic Yards",
   category: "Landscaping",
   intro:
     "Calculate how much gravel you need — and what it will cost — for a driveway, walkway, or drainage bed. Enter your area, gravel type, and price per ton to get cubic yards, tons, and total estimated cost.",
   metaDescription:
-    "Free gravel cost calculator. Enter length, width, depth, gravel type, and price per ton to instantly estimate cubic yards, tons needed, and total cost.",
+    "Free gravel cost calculator. Enter area, depth, gravel type and price per ton to get cubic yards, tons, bags and total cost, with waste included.",
   fields: [
     {
       key: "shape",
@@ -217,6 +235,73 @@ export const gravelCalculator: CalculatorConfig = {
     "Area is calculated from the shape you select — rectangle (length × width), circle (π × radius²), triangle (½ × base × height), circular ring (π × (outer radius² − inner radius²)) for paths around a bed, or trapezoid (average of the two parallel sides × width) for tapered driveways. That area is multiplied by depth to get the exact volume required, converted from cubic feet to cubic yards (27 ft³ per yd³). We add your selected waste percentage to that required volume to get the waste-adjusted volume — the actual amount of material to buy — and every other figure (weight, bags, and cost) is calculated from that same waste-adjusted volume, so they always agree with each other. The suggested order then rounds that waste-adjusted volume up to the nearest 0.1 yd³, since most suppliers sell gravel in small fractional-yard increments. Weight uses the selected gravel type's typical density — crushed stone, pea gravel, limestone, river rock, and decomposed granite all pack differently, from about 2,600 to 2,800 lb per cubic yard. Total cost multiplies that weight by your entered price per ton. For small orders, we also estimate the equivalent number of standard 0.5 ft³ bags, and show the waste-adjusted volume and weight converted to metric (m³ and kg).",
   example:
     "A 20 ft × 10 ft driveway at 4 in deep needs 2.47 yd³ of gravel. With 10% waste that's 2.72 yd³ of crushed stone — about 3.53 tons — so suggested order is 2.8 yd³. At $55/ton, that's roughly $194.20.",
+  sections: [
+    {
+      heading: "How much gravel per 100 square feet",
+      paragraphs: [
+        "A fast way to check your result is to work from 100 ft². The table shows the volume at common depths, and the weight of crushed stone and pea gravel using the same densities as the calculator. Multiply by your area divided by 100 to scale up. These figures are before the waste allowance.",
+      ],
+      table: {
+        headers: ["Depth", "Volume per 100 ft²", "Crushed stone", "Pea gravel"],
+        rows: COVERAGE_ROWS,
+        note: "A 20 × 10 ft area is 200 ft², so double the figures in the row for your depth.",
+      },
+    },
+    {
+      heading: "Weight and volume by gravel type",
+      paragraphs: [
+        "Suppliers quote gravel both by the ton and by the cubic yard, and the two aren't interchangeable because stone types differ in density and moisture. The table shows what a cubic yard weighs for each type in the calculator, and how much volume a ton gives you.",
+      ],
+      table: {
+        headers: ["Gravel type", "Weight per yd³", "Tons per yd³", "Volume per ton"],
+        rows: WEIGHT_ROWS,
+        note: "Densities are typical. Wet stone weighs more, and a load can be heavier than the figure shown in rainy weather.",
+      },
+    },
+    {
+      heading: "Converting price per ton to price per yard",
+      paragraphs: [
+        "Some quarries price by the ton and others by the cubic yard. To compare them, multiply the price per ton by the weight of a cubic yard in tons. At an average of about 2,700 lb per cubic yard (1.35 tons), the conversion looks like this.",
+      ],
+      table: {
+        headers: ["Price per ton", "Equivalent price per yd³"],
+        rows: PRICE_ROWS,
+        note: "Delivery is usually extra and is often a flat fee per load, so a small order costs more per ton than a full truck.",
+      },
+    },
+    {
+      heading: "How deep to spread gravel by project",
+      table: {
+        headers: ["Project", "Typical depth", "Notes"],
+        rows: [
+          ["Decorative beds and mulch-style covering", "2–3 in", "Pea gravel or river rock over fabric"],
+          ["Walkways and garden paths", "2–4 in", "Compact the base first, with edging to hold the stone in"],
+          ["Patio, shed, or play-area base", "4–6 in", "Angular stone that compacts and drains well"],
+          ["French drain or drainage trench", "6–12 in", "Washed stone around a perforated pipe, wrapped in fabric"],
+          ["Driveway", "4–8 in in layers", "Use the driveway calculator for base and surface layers"],
+        ],
+        note: "Match the stone to the job: rounded stone like pea gravel stays loose and shifts under tires and feet, while angular crushed stone locks together.",
+      },
+    },
+    {
+      heading: "Preparing the site",
+      list: [
+        "Mark the area, strip sod and organic material, and remove roots. Gravel laid over topsoil sinks and mixes in.",
+        "Compact the exposed soil with a plate compactor or hand tamper so the stone has a firm bed.",
+        "Lay landscape fabric to separate the soil from the stone and stop weeds from growing through. Overlap seams by 6 in.",
+        "Install edging, such as steel, plastic, or stone, to keep the gravel in place and make a clean border.",
+        "Slope the surface slightly away from buildings so water doesn't pool, and spread the stone in even layers with a rake.",
+      ],
+    },
+    {
+      heading: "Ordering and delivery tips",
+      paragraphs: [
+        `A bag of 0.5 ft³ holds about 50 lb of stone, and it takes ${Math.ceil(27 / CUBIC_FT_PER_BAG)} bags to make one cubic yard. Bags make sense for small jobs, such as a single path or a few planters, but for anything over about a yard, bulk delivery costs much less.`,
+        "Most delivery trucks are limited by weight rather than volume, so ask what the supplier's minimum is and how many tons a truck can carry. Pick a spot for the dump that the truck can reach without crossing soft ground, and put down a tarp or plywood to protect a lawn or driveway. If you can't be home, tell the driver where to drop the load and mark it with stakes or paint.",
+        "Always ask the supplier about local product names. A stone called #57 in one place is sold as something else elsewhere, and it's easier to describe the size you want, such as three-quarter-inch angular crushed stone, than to rely on a number.",
+      ],
+    },
+  ],
   faqs: [
     {
       question: "My area isn't a rectangle — can this calculator still handle it?",

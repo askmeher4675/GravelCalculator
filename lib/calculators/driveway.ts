@@ -5,14 +5,40 @@ import { CUBIC_FT_PER_CUBIC_YD, withWaste, roundUpToIncrement } from "./volumeMo
 export const LBS_PER_CUBIC_YD_AGGREGATE = 2800; // ~1.4 tons per yd³, standard crushed base/gravel
 const ORDER_INCREMENT_YD = 0.1; // suggested order rounds up to the nearest 0.1 yd³
 
+const DRIVEWAY_SIZES: [string, number, number][] = [
+  ["Single-car, short", 10, 20],
+  ["Single-car, standard", 10, 40],
+  ["Double-wide, short", 20, 30],
+  ["Double-wide, long", 20, 50],
+  ["Long single-lane", 12, 100],
+];
+
+/** Total yd³ and tons for a 4 in base plus 2 in surface layer with 10% waste. */
+function drivewayQuantities(length: number, width: number) {
+  const areaSqFt = length * width;
+  const rawYd = (areaSqFt * ((4 + 2) / 12)) / CUBIC_FT_PER_CUBIC_YD;
+  const wasteYd = withWaste(rawYd, 10);
+  return { areaSqFt, wasteYd, tons: (wasteYd * LBS_PER_CUBIC_YD_AGGREGATE) / 2000 };
+}
+
+const DRIVEWAY_ROWS = DRIVEWAY_SIZES.map(([label, w, l]) => {
+  const q = drivewayQuantities(l, w);
+  return [`${label} (${l} × ${w} ft)`, `${q.areaSqFt} ft²`, `${q.wasteYd.toFixed(1)} yd³`, `${q.tons.toFixed(1)} tons`];
+});
+
+// Worked cost example: a 50 × 12 ft driveway at an example price of $40 per ton.
+const COST_EXAMPLE = drivewayQuantities(50, 12);
+const COST_EXAMPLE_PRICE = 40;
+
 export const drivewayCalculator: CalculatorConfig = {
   slug: "driveway-calculator",
   title: "Driveway Calculator",
+  seoTitle: "Driveway Gravel Calculator: Cost, Tons & Yards",
   category: "Landscaping",
   intro:
     "Estimate the total gravel volume for a driveway built with a compacted base layer and a top surface layer.",
   metaDescription:
-    "Driveway gravel calculator. Enter driveway length, width, base depth, and surface depth to get total gravel volume and estimated weight.",
+    "Driveway gravel calculator for base and surface layers. Get cubic yards and tons, then add your price per ton to see the material cost.",
   fields: [
     {
       key: "shape",
@@ -149,12 +175,23 @@ export const drivewayCalculator: CalculatorConfig = {
       step: 0.5,
       helperText: "Top gravel layer for finish and drainage — typically 2 in.",
     },
+    {
+      key: "pricePerTon",
+      label: "Price per ton",
+      unit: "$/ton",
+      type: "number",
+      placeholder: "40",
+      min: 0,
+      step: 1,
+      optional: true,
+      helperText: "Leave blank for quantities only. Enter your supplier's price to see the material cost.",
+    },
   ],
   wastePercentOptions: [5, 10, 15],
   wastePercentDefault: 10,
   wasteHelperText: "Covers compaction, spillage, and uneven sub-grade. 10% works for most driveways.",
   calculate: (inputs, wastePercent) => {
-    const { shape, baseDepth, surfaceDepth } = inputs;
+    const { shape, baseDepth, surfaceDepth, pricePerTon } = inputs;
     const areaSqFt = shapeAreaSqFt(shape, inputs);
     const baseVolumeCubicFt = areaSqFt * (baseDepth / 12);
     const surfaceVolumeCubicFt = areaSqFt * (surfaceDepth / 12);
@@ -166,11 +203,21 @@ export const drivewayCalculator: CalculatorConfig = {
     const wasteAdjustedCubicYd = withWaste(rawVolumeCubicYd, wastePercent);
     const suggestedOrderYd = roundUpToIncrement(wasteAdjustedCubicYd, ORDER_INCREMENT_YD);
     const estimatedWeightTons = (wasteAdjustedCubicYd * LBS_PER_CUBIC_YD_AGGREGATE) / 2000;
+    // Cost is derived from the waste-adjusted weight (never the rounded order), and only when a price was entered.
+    const totalCost = pricePerTon && pricePerTon > 0 ? estimatedWeightTons * pricePerTon : null;
 
     return {
-      primaryValue: rawVolumeCubicYd.toFixed(2),
-      primaryUnit: "yd³",
-      primaryExplanation: "Total material required (base + surface)",
+      ...(totalCost === null
+        ? {
+            primaryValue: rawVolumeCubicYd.toFixed(2),
+            primaryUnit: "yd³",
+            primaryExplanation: "Total material required (base + surface)",
+          }
+        : {
+            primaryValue: `$${totalCost.toFixed(2)}`,
+            primaryUnit: "",
+            primaryExplanation: "Estimated material cost (base + surface, includes waste)",
+          }),
       secondary: [
         { label: `With ${wastePercent}% waste`, value: `${wasteAdjustedCubicYd.toFixed(2)} yd³` },
         { label: "Suggested order", value: `${suggestedOrderYd.toFixed(1)} yd³` },
@@ -184,14 +231,87 @@ export const drivewayCalculator: CalculatorConfig = {
         { label: `With ${wastePercent}% waste`, value: `${wasteAdjustedCubicYd.toFixed(2)} yd³` },
         { label: `Weight (~${LBS_PER_CUBIC_YD_AGGREGATE} lb/yd³, incl. waste)`, value: `${estimatedWeightTons.toFixed(2)} tons` },
         { label: "Suggested order", value: `${suggestedOrderYd.toFixed(1)} yd³`, note: `Rounded up to the nearest ${ORDER_INCREMENT_YD} yd³, base and surface combined` },
+        ...(totalCost === null
+          ? []
+          : [
+              {
+                label: `Cost (${estimatedWeightTons.toFixed(2)} tons × $${pricePerTon.toFixed(2)}/ton)`,
+                value: `$${totalCost.toFixed(2)}`,
+                note: "Material only. Delivery, tax, fabric, and equipment are extra",
+              },
+            ]),
       ],
     };
   },
   methodology:
-    "Area is calculated from the shape you select — rectangle (length × width), circle (π × radius²), triangle (½ × base × height), circular ring (π × (outer radius² − inner radius²)) for a circular loop driveway, or trapezoid (average of the two parallel sides × length) for a driveway that tapers between the street and garage. Base and surface layer volumes are calculated separately (area × depth in feet) and then summed to get the exact volume required, since driveways are typically built with a compacted crushed-stone base topped by a finer surface layer. That required volume is converted to cubic yards (27 ft³ per yd³), then your selected waste percentage is added to cover compaction, spillage, and uneven sub-grade. Weight and the suggested order are both calculated from that same waste-adjusted volume — weight assumes standard crushed aggregate at approximately 2,800 lb per cubic yard, and the suggested order rounds up to the nearest 0.1 yd³.",
+    "Area is calculated from the shape you select — rectangle (length × width), circle (π × radius²), triangle (½ × base × height), circular ring (π × (outer radius² − inner radius²)) for a circular loop driveway, or trapezoid (average of the two parallel sides × length) for a driveway that tapers between the street and garage. Base and surface layer volumes are calculated separately (area × depth in feet) and then summed to get the exact volume required, since driveways are typically built with a compacted crushed-stone base topped by a finer surface layer. That required volume is converted to cubic yards (27 ft³ per yd³), then your selected waste percentage is added to cover compaction, spillage, and uneven sub-grade. Weight and the suggested order are both calculated from that same waste-adjusted volume — weight assumes standard crushed aggregate at approximately 2,800 lb per cubic yard, and the suggested order rounds up to the nearest 0.1 yd³. If you enter a price per ton, the material cost is that waste-adjusted weight multiplied by your price. Leave the price blank to see quantities only.",
   example:
-    "A 50 ft × 12 ft driveway with a 4 in base and 2 in surface layer needs 11.11 yd³ total. With 10% waste that's 12.22 yd³ — about 17.11 tons — so suggested order is 12.3 yd³.",
+    "A 50 ft × 12 ft driveway with a 4 in base and 2 in surface layer needs 11.11 yd³ total. With 10% waste that's 12.22 yd³ — about 17.11 tons — so suggested order is 12.3 yd³. At $40 per ton, the stone costs about $684.44 before delivery.",
+  sections: [
+    {
+      heading: "Gravel needed for common driveway sizes",
+      paragraphs: [
+        "The table assumes a 4 in compacted base plus a 2 in surface layer, 10% waste, and crushed aggregate at about 2,800 lb per cubic yard. These are quantities for the gravel only. Heavier traffic or soft soil calls for a deeper base, which you can enter in the calculator.",
+      ],
+      table: {
+        headers: ["Driveway", "Area", "Gravel with waste", "Weight"],
+        rows: DRIVEWAY_ROWS,
+        note: "Delivery trucks carry a limited load, so a long driveway may need several trips. Ask your supplier for the truck capacity in tons.",
+      },
+    },
+    {
+      heading: "The layers of a gravel driveway",
+      paragraphs: [
+        "A durable gravel driveway is built in layers, from large and coarse at the bottom to small and fine on top. Stone names differ by region, so ask your supplier for the product they use for a driveway base and the one they use for a driving surface.",
+      ],
+      table: {
+        headers: ["Layer", "Typical depth", "Typical material", "Purpose"],
+        rows: [
+          ["Geotextile fabric (optional)", "—", "Woven or non-woven fabric", "Keeps soft soil from mixing into the stone"],
+          ["Sub-base (soft soil only)", "6–12 in", "Large crushed stone, e.g. #3 or #4", "Spreads load over weak ground"],
+          ["Base", "4–6 in", "Crusher run or dense-grade aggregate", "Compacts into a firm, stable foundation"],
+          ["Surface", "2 in", "Smaller angular stone, e.g. #57 or fines", "Smooth, drivable top layer"],
+        ],
+        note: "Use angular crushed stone rather than rounded river gravel, which doesn't lock together and shifts under tires.",
+      },
+    },
+    {
+      heading: "Compaction, drainage, and crown",
+      list: [
+        "Compact each layer separately with a plate compactor, in lifts of no more than about 4 in at a time. A base that isn't compacted will rut within the first season.",
+        "Build in a crown, so the center is higher than the edges, or a one-way cross slope. A fall of about 1/4 to 1/2 in per foot of width sheds water. On a 12 ft driveway with a center crown, that's a rise of roughly 1.5 to 3 in at the middle.",
+        "Direct runoff away from the driveway with ditches, culverts, or a swale. Standing water softens the base and washes out the surface.",
+        "Make the driveway wide enough to use. About 10 ft is the minimum for one lane, 12 ft is more comfortable, and two cars side by side need about 18 to 20 ft. Some localities set minimum widths for emergency vehicle access.",
+        "Compaction squeezes loose stone down, so the finished layers end up thinner than the loose depth you spread. The 10% waste setting covers a typical base. On soft ground, or with a deep base, switch to 15%.",
+      ],
+    },
+    {
+      heading: "Estimating cost",
+      paragraphs: [
+        `Enter your supplier's price per ton in the calculator and it shows the material cost directly. The math is the total weight of the gravel times the price per ton, plus delivery. Using the table above, a 50 × 12 ft driveway needs about ${COST_EXAMPLE.tons.toFixed(1)} tons. At an example price of $${COST_EXAMPLE_PRICE} per ton, that's about $${Math.round(COST_EXAMPLE.tons * COST_EXAMPLE_PRICE).toLocaleString("en-US")} for the stone before delivery, taxes, and any fabric or equipment rental. Actual prices vary widely by region and stone type, so get two or three quotes.`,
+        "Delivery fees are often a flat fee or a charge per load, so ordering all the stone in as few loads as practical saves money. Ask whether the price includes spreading, and whether your driveway can carry the truck's weight without damage.",
+      ],
+    },
+    {
+      heading: "Maintaining a gravel driveway",
+      table: {
+        headers: ["Task", "How often", "Notes"],
+        rows: [
+          ["Rake or drag to refill ruts and level the surface", "Every few months, or after storms", "A landscape rake or a drag bar works"],
+          ["Fill potholes", "As they appear", "Add matching stone and compact it"],
+          ["Add a fresh surface layer", "Every 2–4 years", "Usually about 1–2 in"],
+          ["Control weeds", "Each spring", "A well-compacted base reduces weeds, and fabric helps"],
+          ["Clear snow", "As needed", "Raise the plow blade about an inch to avoid scraping up stone"],
+        ],
+      },
+    },
+  ],
   faqs: [
+    {
+      question: "How much does a gravel driveway cost?",
+      answer:
+        "Enter your supplier's price per ton and the calculator multiplies it by the total weight of base and surface stone, including your waste allowance. That covers the stone only. Delivery, taxes, geotextile fabric, edging, and equipment rental are extra, so get two or three quotes before you budget.",
+    },
     {
       question: "My driveway isn't a simple rectangle — can this calculator still handle it?",
       answer:

@@ -2,17 +2,41 @@ import { CalculatorConfig } from "./types";
 import { SHAPES, shapeAreaSqFt, shapeAreaFormulaLabel, shapeLabel } from "./shapeArea";
 import { rawVolume, withWaste, roundUpToIncrement } from "./volumeModel";
 
-const LBS_PER_CUBIC_YD_TOPSOIL = 2200; // ~81 lb/ft³, typical for moist screened topsoil
+export const LBS_PER_CUBIC_YD_TOPSOIL = 2200; // ~81 lb/ft³, typical for moist screened topsoil
 const ORDER_INCREMENT_YD = 0.1; // suggested order rounds up to the nearest 0.1 yd³
+
+/** Cubic yards to cover an area to a depth, before waste. */
+function yardsFor(areaSqFt: number, depthIn: number) {
+  return (areaSqFt * (depthIn / 12)) / 27;
+}
+
+const fmt = (n: number) => (Number.isInteger(n) ? n.toString() : n.toFixed(1));
+
+const COVERAGE_ROWS = [1, 2, 3, 4, 6, 8, 12].map((d) => {
+  const per100 = yardsFor(100, d);
+  return [
+    `${d} in`,
+    `${fmt(27 / (d / 12))} ft²`,
+    `${per100.toFixed(2)} yd³`,
+    `${((per100 * LBS_PER_CUBIC_YD_TOPSOIL) / 2000).toFixed(2)} tons`,
+  ];
+});
+
+// Worked example: a 4 × 8 ft raised bed filled 12 in deep with a 70/30 topsoil and compost blend, 10% settling.
+const BED_YD = yardsFor(4 * 8, 12);
+const BED_ORDER_YD = BED_YD * 1.1;
+const BED_COMPOST_YD = BED_ORDER_YD * 0.3;
+const BED_TOPSOIL_YD = BED_ORDER_YD * 0.7;
 
 export const topsoilCalculator: CalculatorConfig = {
   slug: "topsoil-calculator",
   title: "Topsoil Calculator",
+  seoTitle: "Topsoil Calculator: Cubic Yards, Tons & Depth",
   category: "Lawn & Garden",
   intro:
     "Estimate how many cubic yards of topsoil you need to fill a garden bed, raised bed, or level a section of lawn.",
   metaDescription:
-    "Topsoil calculator for garden beds and lawn leveling. Enter length, width, and depth to get the cubic yards of topsoil you need to order.",
+    "Topsoil calculator for garden beds, raised beds and lawn leveling. Get cubic yards and tons to order, plus how deep to spread topsoil by project.",
   fields: [
     {
       key: "shape",
@@ -180,6 +204,58 @@ export const topsoilCalculator: CalculatorConfig = {
     "Area is calculated from the shape you select — rectangle (length × width), circle (π × radius²), triangle (½ × base × height), circular ring (π × (outer radius² − inner radius²)), or trapezoid (average of the two parallel sides × width). That area is multiplied by depth to get the exact volume required, converted from cubic feet to cubic yards (27 ft³ per yd³). Your selected waste percentage is added to cover settling and uneven grading, and weight is calculated from that same waste-adjusted volume — approximately 2,200 lb per cubic yard for moist, screened topsoil (actual density varies with moisture content and soil composition). The suggested order then rounds the waste-adjusted volume up to the nearest 0.1 yd³ since most suppliers sell topsoil by the yard.",
   example:
     "A 12 ft × 6 ft raised bed area at 6 in deep needs 1.33 yd³ of topsoil. With 10% waste that's 1.47 yd³ — about 1.61 tons — so suggested order is 1.5 yd³.",
+  sections: [
+    {
+      heading: "How far a cubic yard of topsoil goes",
+      paragraphs: [
+        "One cubic yard is 27 cubic feet, so it covers 324 ft² at 1 in deep and proportionally less as you go deeper. Use this table to sanity-check your result or to estimate quickly before you measure precisely. Weights use the same 2,200 lb per cubic yard as the calculator.",
+      ],
+      table: {
+        headers: ["Depth", "Area covered by 1 yd³", "Needed for 100 ft²", "Weight for 100 ft²"],
+        rows: COVERAGE_ROWS,
+        note: "Figures are before any settling allowance. Add 10–20% for compaction and uneven ground.",
+      },
+    },
+    {
+      heading: "How deep to spread topsoil by project",
+      table: {
+        headers: ["Project", "Typical depth", "Notes"],
+        rows: [
+          ["Top-dressing or overseeding an existing lawn", "1/4–1/2 in", "A thin layer worked into the grass, not a full layer"],
+          ["Leveling low spots in a lawn", "1–2 in at a time", "Spread thin layers so the grass can grow up through them"],
+          ["New lawn from sod or seed", "4–6 in total", "Count the existing soil you have already loosened"],
+          ["Flower and shrub beds", "4–8 in", "Blend with compost for better structure"],
+          ["Raised beds for vegetables", "8–12 in", "Root vegetables like carrots may need up to 18 in"],
+        ],
+        note: "These are typical ranges. Match depth to your plants and to how much good soil is already on site.",
+      },
+    },
+    {
+      heading: "Worked example: a raised bed with a soil and compost blend",
+      paragraphs: [
+        `A 4 × 8 ft raised bed filled 12 in deep holds ${BED_YD.toFixed(2)} yd³ (32 ft³). Adding 10% for settling brings the order to ${BED_ORDER_YD.toFixed(2)} yd³. If you blend 70% topsoil with 30% compost by volume, that is about ${BED_TOPSOIL_YD.toFixed(2)} yd³ of topsoil and ${BED_COMPOST_YD.toFixed(2)} yd³ of compost.`,
+        "Beds this small are often easier to fill from bags. Bagged soil usually comes in 0.75 to 1 ft³ sacks, so a full cubic yard takes about 27 to 36 of them, and bulk delivery is usually cheaper once you need more than a yard or two.",
+      ],
+    },
+    {
+      heading: "What good topsoil looks like",
+      list: [
+        "Screened, so it's free of large rocks, roots, and clumps. Squeeze a handful: loam should crumble, not form a hard ball or stay loose like sand.",
+        "Dark and earthy-smelling. A sour or chemical smell suggests poor composting or contamination.",
+        "Free of weeds and weed seeds. Ask the supplier where it is sourced, because soil stripped from construction sites can contain buried debris or clay subsoil.",
+        "Close to neutral pH. Most lawns and garden plants prefer roughly 6.0 to 7.0, and a basic soil test from your local extension office costs little.",
+        'Labeled honestly. "Topsoil", "garden soil", and "fill dirt" are not interchangeable; fill dirt is fine for grading but won\'t grow plants well.',
+      ],
+    },
+    {
+      heading: "Preparing, delivering, and spreading",
+      paragraphs: [
+        "Loosen the existing soil 2 to 3 in deep before you add topsoil, so the new layer bonds to the old one instead of sitting on a hard pan that water can't cross. Rake out stones and clear debris first.",
+        "Grade the finished surface so water flows away from your house. A common building-code guideline is a drop of at least 6 in over the first 10 ft from the foundation. Ask the driver to dump on a tarp or on a hard surface away from storm drains, and cover the pile if rain is forecast so it doesn't wash into the street.",
+        "A standard 6 ft³ wheelbarrow holds less than a quarter of a cubic yard, so a 1 yd³ pile is roughly five loads. Plan the route for the wheelbarrow and pick a dry day to spread, because wet topsoil is much heavier and compacts more easily when walked on.",
+      ],
+    },
+  ],
   faqs: [
     {
       question: "My bed isn't a rectangle — can this calculator still handle it?",

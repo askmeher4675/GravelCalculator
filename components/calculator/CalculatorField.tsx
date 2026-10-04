@@ -74,6 +74,7 @@ export function CalculatorField({ field, value, error, onChange }: CalculatorFie
         className="mb-2 block text-[13px] font-semibold uppercase tracking-wide text-text-secondary"
       >
         {field.label}
+        {field.optional && <span className="ml-1.5 font-normal normal-case text-text-muted">(optional)</span>}
       </label>
       <div className="flex items-stretch">
         <button

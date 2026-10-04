@@ -107,3 +107,48 @@ test("topsoil calculator: weight uses the waste-adjusted volume, order rounds to
   const weightRow = result.secondary.find((s) => s.label === "Estimated weight");
   assert.ok(weightRow && Math.abs(num(weightRow.value) - expectedTons) < TOLERANCE);
 });
+
+test("driveway calculator: price is optional and, when given, cost is waste-adjusted tons x price", () => {
+  const base = { shape: 1, length: 50, width: 12, baseDepth: 4, surfaceDepth: 2 };
+  const wastePercent = 10;
+
+  const without = drivewayCalculator.calculate(base, wastePercent);
+  assert.equal(without.primaryUnit, "yd³", "blank price keeps the volume as the headline");
+  assert.ok(!without.breakdown.some((r) => r.label.startsWith("Cost")), "no cost row without a price");
+
+  const priced = drivewayCalculator.calculate({ ...base, pricePerTon: 40 }, wastePercent);
+  const rawCubicYd = (shapeAreaSqFt(1, base) * ((base.baseDepth + base.surfaceDepth) / 12)) / 27;
+  const expectedTons = (withWaste(rawCubicYd, wastePercent) * 2800) / 2000;
+  const expectedCost = expectedTons * 40;
+  assert.ok(priced.primaryValue.startsWith("$"));
+  assert.ok(Math.abs(num(priced.primaryValue) - expectedCost) < 0.01, "cost = waste-adjusted tons x price");
+  const costRow = priced.breakdown.find((r) => r.label.startsWith("Cost"));
+  assert.ok(costRow && Math.abs(num(costRow.value) - expectedCost) < 0.01);
+
+  // The quantities themselves must not change when a price is added.
+  assert.deepEqual(priced.secondary, without.secondary);
+
+  // Regression guard: cost must not be computed from the rounded order.
+  const wrongCost = roundUpToIncrement(withWaste(rawCubicYd, wastePercent), 0.1) * 2800 / 2000 * 40;
+  assert.ok(Math.abs(expectedCost - wrongCost) > 0.5, "this case distinguishes the two bases");
+});
+
+test("concrete calculator: price is optional and, when given, cost is waste-adjusted yards x price", () => {
+  const base = { shape: 1, length: 10, width: 10, thickness: 4 };
+  const wastePercent = 10;
+
+  const without = concreteCalculator.calculate(base, wastePercent);
+  assert.equal(without.primaryUnit, "yd³");
+  assert.ok(!without.breakdown.some((r) => r.label.startsWith("Cost")));
+
+  const priced = concreteCalculator.calculate({ ...base, pricePerYd3: 150 }, wastePercent);
+  const { cubicYd: rawCubicYd } = rawVolume(shapeAreaSqFt(1, base), base.thickness / 12);
+  const wasteCubicYd = withWaste(rawCubicYd, wastePercent);
+  const expectedCost = wasteCubicYd * 150;
+  assert.ok(Math.abs(num(priced.primaryValue) - expectedCost) < 0.01, "cost = waste-adjusted yards x price");
+  assert.deepEqual(priced.secondary, without.secondary, "quantities are unchanged by a price");
+
+  // Regression guard: cost must not be computed from the rounded quarter-yard order.
+  const wrongCost = roundUpToIncrement(wasteCubicYd, 0.25) * 150;
+  assert.ok(Math.abs(expectedCost - wrongCost) > 1);
+});
